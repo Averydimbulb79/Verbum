@@ -5,7 +5,7 @@ A free, single-user, browser-based word processor with a familiar ribbon interfa
 
 **App URL (after GitHub Pages activation):** https://averydimbulb79.github.io/Verbum/
 
-## Version 1.0.1: Ribbon and workspace fix
+## Version 1.0.2: Responsive interface
 
 | Area | Implemented |
 | --- | --- |
@@ -44,3 +44,10 @@ MIT, see LICENSE.
 - Added References ribbon, grouped commands, navigation outline and styles sidebar.
 - Refined workspace layout to match the approved professional mockup.
 - RTF fidelity and true pagination remain planned improvements.
+
+### 1.0.2 changes
+- Responsive ribbon: collapsible tools on narrow viewports and scrollable ribbon tabs.
+- Compact mobile toolbar for Tools, Outline and Styles.
+- Navigation and Styles panes become individually accessible overlays on mobile.
+- Desktop keeps the approved ribbon layout with tighter command spacing.
+- Note: A4 remains a fixed-size editing canvas; mobile users can scroll to reach the full page. Responsive pagination and improved mobile editing are future work.
