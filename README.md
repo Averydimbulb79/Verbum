@@ -5,7 +5,7 @@ A free, single-user, browser-based word processor with a familiar ribbon interfa
 
 **App URL (after GitHub Pages activation):** https://averydimbulb79.github.io/Verbum/
 
-## Current development version: 1.1.0-alpha.1
+## Current development version: 1.1.0-alpha.2
 
 | Area | Implemented |
 | --- | --- |
@@ -34,6 +34,14 @@ A free, single-user, browser-based word processor with a familiar ribbon interfa
 Open index.html in a modern browser, or enable GitHub Pages under Settings → Pages → Deploy from a branch → main → /(root).
 
 ## 1.1 development checkpoints
+
+### 1.1.0-alpha.2
+- Created rollback branch `backup/pre-1.1-alpha2`.
+- Added a monoline full-screen toggle to the app header and a Full screen command in View; native Fullscreen API with fallback.
+- Added a Focus command to hide side panes.
+- Native `.verbum` snapshot schema is now version 2; imported and saved document HTML is filtered for unsafe active content.
+- Browser visual and functional QA remains pending; these changes are not a complete structured document engine or Word-compatible pagination.
+
 
 ### 1.1.0-alpha.1
 - Created rollback branch `backup/pre-1.1-v1.0.9` before code changes.
