@@ -5,7 +5,7 @@ A free, single-user, browser-based word processor with a familiar ribbon interfa
 
 **App URL (after GitHub Pages activation):** https://averydimbulb79.github.io/Verbum/
 
-## Version 1.0.9: Version number in application header
+## Current development version: 1.1.0-alpha.1
 
 | Area | Implemented |
 | --- | --- |
@@ -22,16 +22,27 @@ A free, single-user, browser-based word processor with a familiar ribbon interfa
 - Images inserted from URLs are not embedded into RTF.
 - Browser autosave is not a substitute for saving a file or making backups.
 
-## Roadmap
+## Approved roadmap
 | Version | Milestone |
 | --- | --- |
-| 1.x | RTF round-trip, robust local save/reopen, editor reliability, pagination |
-| 2.0 | Tables, images, styles, headers/footers, navigation, references |
-| 3.0 | Templates, print-ready PDF, review tools, offline PWA |
-| 4.0 | DOCX import/export and compatibility testing |
+| 1.1 | Core File, Home, Insert, Design, Layout and contextual ribbons; document engine and layout |
+| 1.2 | References, Review and View, citations, indexes, comparison and review metadata |
+| 1.3 | Custom ribbon, EPUB, compatibility, printing and responsive QA |
+| Later | DOCX interoperability |
 
 ## Use
 Open index.html in a modern browser, or enable GitHub Pages under Settings → Pages → Deploy from a branch → main → /(root).
+
+## 1.1 development checkpoints
+
+### 1.1.0-alpha.1
+- Created rollback branch `backup/pre-1.1-v1.0.9` before code changes.
+- Added Design tab with theme accent selection, document font control and page colour controls.
+- Expanded Home with text colour and highlighting.
+- Expanded Insert with symbols and horizontal rules.
+- Added HTML export to File.
+- Native document snapshot now stores theme colour and page background.
+- This is an implementation checkpoint, not a tested or complete 1.1 release. True pagination, robust RTF fidelity, advanced Word-like features and full QA remain outstanding.
 
 ## Release policy
 Maintain README with every release. Use Git checkpoints for rollback. Validate document reopening and export before marking a feature complete. Collaboration and user accounts are out of scope.
