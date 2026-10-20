@@ -5,7 +5,7 @@ A free, single-user, browser-based word processor with a familiar ribbon interfa
 
 **App URL (after GitHub Pages activation):** https://averydimbulb79.github.io/Verbum/
 
-## Version 1.0.5: Automatic fit-to-width
+## Version 1.0.6: Compact icon ribbon
 
 | Area | Implemented |
 | --- | --- |
@@ -71,3 +71,10 @@ MIT, see LICENSE.
 - Manual zoom disables automatic fit until Fit is selected again.
 - Browser resize recalculates automatic fit; print resets display zoom.
 - Page dimensions remain A4/Letter in the document model.
+
+### 1.0.6 changes
+- Replaced text-heavy ribbon command buttons with compact inline SVG icons.
+- Tightened desktop toolbar sizing and group spacing based on Microsoft Word proportions.
+- Retained command tooltips and accessible button labels.
+- Mobile group popups keep larger touch targets with icon-only commands.
+- Further visual QA on desktop and Android is recommended.
