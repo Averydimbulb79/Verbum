@@ -5,7 +5,7 @@ A free, single-user, browser-based word processor with a familiar ribbon interfa
 
 **App URL (after GitHub Pages activation):** https://averydimbulb79.github.io/Verbum/
 
-## Version 1.0.7: Ribbon labels and tooltips
+## Version 1.0.8: Monoline icons and page rulers
 
 | Area | Implemented |
 | --- | --- |
@@ -84,3 +84,9 @@ MIT, see LICENSE.
 - Toolbar icons provide descriptive hover tooltips and accessible labels.
 - Commands without a dedicated icon use their own short text label rather than repeated generic icons.
 - Preserves compact Word-inspired ribbon sizing and responsive mobile controls.
+
+### 1.0.8 changes
+- Replaced Save, Undo and Redo quick actions with consistent thin-stroke SVG icons.
+- Added horizontal ruler above the document and vertical ruler to the left, with centimetre labels and margin indicators.
+- Ruler measurements respond to zoom, page size and orientation; rulers are excluded from print.
+- Rulers are display-only at this stage; draggable margin and indent markers are not yet implemented.
