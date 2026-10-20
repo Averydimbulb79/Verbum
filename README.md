@@ -5,7 +5,7 @@ A free, single-user, browser-based word processor with a familiar ribbon interfa
 
 **App URL (after GitHub Pages activation):** https://averydimbulb79.github.io/Verbum/
 
-## Version 1.0.6: Compact icon ribbon
+## Version 1.0.7: Ribbon labels and tooltips
 
 | Area | Implemented |
 | --- | --- |
@@ -78,3 +78,9 @@ MIT, see LICENSE.
 - Retained command tooltips and accessible button labels.
 - Mobile group popups keep larger touch targets with icon-only commands.
 - Further visual QA on desktop and Android is recommended.
+
+### 1.0.7 changes
+- Ribbon navigation tabs display their full text labels (File, Home, Insert, Layout, References, Review, View).
+- Toolbar icons provide descriptive hover tooltips and accessible labels.
+- Commands without a dedicated icon use their own short text label rather than repeated generic icons.
+- Preserves compact Word-inspired ribbon sizing and responsive mobile controls.
