@@ -5,11 +5,11 @@ A free, single-user, browser-based word processor with a familiar ribbon interfa
 
 **App URL (after GitHub Pages activation):** https://averydimbulb79.github.io/Verbum/
 
-## Version 1.0.0: Initial foundation
+## Version 1.0.1: Ribbon and workspace fix
 
 | Area | Implemented |
 | --- | --- |
-| Interface | File, Home, Insert, Layout, Review, View ribbon tabs; light/dark mode |
+| Interface | Seven functional ribbon tabs, grouped commands, Navigation and Styles panes, light/dark mode |
 | Editing | Common rich-text formatting, headings, lists, alignment, undo/redo |
 | Layout | A4 and Letter, orientation, margins, zoom |
 | Files | Native .verbum, basic RTF import/export, HTML/TXT import, HTML export |
@@ -38,3 +38,9 @@ Maintain README with every release. Use Git checkpoints for rollback. Validate d
 
 ## License
 MIT, see LICENSE.
+
+### 1.0.1 changes
+- Replaced broken startup JavaScript that prevented ribbon rendering.
+- Added References ribbon, grouped commands, navigation outline and styles sidebar.
+- Refined workspace layout to match the approved professional mockup.
+- RTF fidelity and true pagination remain planned improvements.
