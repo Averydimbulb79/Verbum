@@ -5,7 +5,7 @@ A free, single-user, browser-based word processor with a familiar ribbon interfa
 
 **App URL (after GitHub Pages activation):** https://averydimbulb79.github.io/Verbum/
 
-## Version 1.0.8: Monoline icons and page rulers
+## Version 1.0.9: Version number in application header
 
 | Area | Implemented |
 | --- | --- |
@@ -90,3 +90,7 @@ MIT, see LICENSE.
 - Added horizontal ruler above the document and vertical ruler to the left, with centimetre labels and margin indicators.
 - Ruler measurements respond to zoom, page size and orientation; rulers are excluded from print.
 - Rulers are display-only at this stage; draggable margin and indent markers are not yet implemented.
+
+### 1.0.9 changes
+- Displayed the current version beside the Verbum wordmark in the application header.
+- Styled version as a small neutral label that adapts to light/dark mode and mobile widths.
