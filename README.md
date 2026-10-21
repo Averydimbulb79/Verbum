@@ -1,6 +1,6 @@
 # Verbum
 
-> **Verbum 2.0 development:** The modular rewrite is being prepared on branch `rewrite/v2`. The current single-file 1.1 application remains live on `main`; the checkpoint is `backup/pre-v2-rewrite`. See [ROADMAP.md](ROADMAP.md), [WORD_PARITY.md](WORD_PARITY.md), [component evaluation](docs/COMPONENTS.md) and [CHANGELOG.md](CHANGELOG.md). No v2 engine or EXE has been built yet.
+> **Verbum 2.0 development:** The modular rewrite is being prepared on branch `rewrite/v2`. The current single-file 1.1 application remains live on `main`; the checkpoint is `backup/pre-v2-rewrite`. See [ROADMAP.md](ROADMAP.md), [WORD_PARITY.md](WORD_PARITY.md), [component evaluation](docs/COMPONENTS.md) and [CHANGELOG.md](CHANGELOG.md). A v2 React/Tiptap editor prototype and GitHub Actions build workflow have been committed; compilation and runtime validation remain pending.
 
 Your words. Your way.
 
@@ -8,7 +8,13 @@ A free, single-user, browser-based word processor with a familiar ribbon interfa
 
 **App URL (after GitHub Pages activation):** https://averydimbulb79.github.io/Verbum/
 
-## Current development version: 1.1.0-alpha.4
+## Current production version: 1.1.0-alpha.4
+
+## V2 prototype (rewrite/v2)
+
+The branch contains a modular React/TypeScript/Vite editor using Tiptap, a basic ribbon, a v3 structured .verbum document format, Electron scaffolding and GitHub Actions for browser and Windows builds. **The v2 prototype is not the published production app and has not yet passed build, performance, pagination or DOCX fidelity tests.** Old v1 documents are deliberately rejected pending a safe migration importer.
+
+To develop locally: `npm install`, `npm run dev`, `npm test`, `npm run build`. Windows package: `npm run desktop:pack` on Windows, or download a successful Windows Actions artifact. The Actions workflow uses `npm install` until a lockfile is generated and committed.
 
 | Area | Implemented |
 | --- | --- |
