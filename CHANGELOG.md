@@ -1,3 +1,10 @@
+## 2.0.0-alpha.5 — Insert ribbon (Alpha 4 baseline)
+- Created `backup/alpha4-confirmed-working` before development.
+- Added compact Insert ribbon groups: Pages (divider, line break), Text (quote, local date/time), Symbols (© ® — • °).
+- Marked Table, Picture and Link as disabled pending their respective editor extensions.
+- Preserved the Alpha 4 logo, ribbon icon system, navigation/styles panes, rulers, page geometry and status bar without structural changes.
+- Build and browser deployment are not yet independently verified.
+
 ## 2.0.0-alpha.6 — UI restoration after regression
 - Restored the V1.1-style thin blue `verbum.` logo, monoline icon toolbar, compact tabs, navigation/styles sidebars and bottom status bar.
 - Retained the functional Insert ribbon added in alpha.5 (divider, line break, quote, date/time and symbols).
