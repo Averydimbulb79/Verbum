@@ -1,16 +1,40 @@
-import type {ReactNode} from 'react';
+import {useEffect,useRef,useState,type ReactNode} from 'react';
 type Props={
  onCover:()=>void;onBlank:()=>void;onPageBreak:()=>void;onTable:(rows:number,cols:number)=>void;
  onPicture:()=>void;onLink:()=>void;onBookmark:()=>void;onTextBox:()=>void;
  onDate:()=>void;onTime:()=>void;onRule:()=>void;onSymbol:(s:string)=>void;
  onHeader:()=>void;onFooter:()=>void;onPageNumber:()=>void;
+ onQuickTable:(kind:'calendar'|'comparison'|'schedule')=>void;
 };
 function Group({title,children}:{title:string;children:ReactNode}){return <section className="ribbon-group"><div className="ribbon-tools">{children}</div><small>{title}</small></section>}
 function Item({icon,label,onClick,disabled=false}:{icon:string;label:string;onClick?:()=>void;disabled?:boolean}){return <button className="insert-item" disabled={disabled} onClick={onClick} title={disabled?label+' — planned':label}><span className="insert-symbol">{icon}</span><span>{label}</span></button>}
 function Stack({children}:{children:ReactNode}){return <div className="insert-stack">{children}</div>}
+function TablePicker({onInsert,onQuickTable}:{onInsert:(rows:number,cols:number)=>void;onQuickTable:Props['onQuickTable']}) {
+ const [open,setOpen]=useState(false),[hover,setHover]=useState<[number,number]>([0,0]);
+ const [dialog,setDialog]=useState(false),[rows,setRows]=useState(3),[cols,setCols]=useState(3);
+ const [quick,setQuick]=useState(false);
+ const ref=useRef<HTMLDivElement>(null);
+ useEffect(()=>{if(!open)return;const close=(e:PointerEvent)=>{if(ref.current&&!ref.current.contains(e.target as globalThis.Node))setOpen(false)};const escape=(e:KeyboardEvent)=>{if(e.key==='Escape'){setOpen(false);setDialog(false)}};document.addEventListener('pointerdown',close);document.addEventListener('keydown',escape);return()=>{document.removeEventListener('pointerdown',close);document.removeEventListener('keydown',escape)}},[open]);
+ const insert=(r:number,c:number)=>{onInsert(r,c);setOpen(false);setDialog(false);setHover([0,0])};
+ return <div className="table-picker" ref={ref}>
+  <button className={'table-picker-trigger'+(open?' selected':'')} aria-expanded={open} aria-haspopup="menu" onClick={()=>setOpen(v=>!v)}><span className="insert-symbol">▦</span><span>Table⌄</span></button>
+  {open&&<div className="table-picker-menu" role="menu">
+   <strong>Insert Table</strong><div className="table-picker-caption">{hover[0]&&hover[1]?hover[0]+' × '+hover[1]+' Table':'Select the number of columns and rows'}</div>
+   <div className="table-picker-grid" onMouseLeave={()=>setHover([0,0])}>{Array.from({length:80},(_,i)=>{const c=i%10+1,r=Math.floor(i/10)+1;return <button key={i} type="button" aria-label={c+' columns by '+r+' rows'} className={c<=hover[0]&&r<=hover[1]?'highlighted':''} onMouseEnter={()=>setHover([c,r])} onFocus={()=>setHover([c,r])} onClick={()=>insert(r,c)}/>})}</div>
+   <div className="table-picker-actions"><button onClick={()=>setDialog(v=>!v)}>▦ Insert Table…</button>
+   {dialog&&<form className="table-dimensions" onSubmit={e=>{e.preventDefault();insert(rows,cols)}}><label>Columns <input type="number" min="1" max="30" value={cols} onChange={e=>setCols(Math.max(1,Math.min(30,Number(e.target.value)||1)))}/></label><label>Rows <input type="number" min="1" max="100" value={rows} onChange={e=>setRows(Math.max(1,Math.min(100,Number(e.target.value)||1)))}/></label><button type="submit">Insert</button></form>}
+   <button disabled title="Freehand table drawing requires additional editor support">✎ Draw Table</button>
+   <button disabled title="Text-to-table conversion is planned">▤ Convert Text to Table…</button>
+   <button disabled title="Embedded spreadsheet objects are not supported">▦ Excel Spreadsheet</button>
+   <button onClick={()=>setQuick(v=>!v)} aria-expanded={quick}>▦ Quick Tables ▸</button>
+   {quick&&<div className="quick-table-options">{(['calendar','comparison','schedule'] as const).map(kind=><button key={kind} onClick={()=>{onQuickTable(kind);setOpen(false)}}>{kind[0].toUpperCase()+kind.slice(1)}</button>)}</div>}
+   </div>
+  </div>}
+ </div>;
+}
 export default function InsertRibbon(p:Props){return <>
  <Group title="Pages"><Stack><button onClick={p.onCover}>▤ Cover Page</button><button onClick={p.onBlank}>▤ Blank Page</button><button onClick={p.onPageBreak}>↵ Page Break</button></Stack></Group>
- <Group title="Tables"><label className="insert-grid-control"><span className="insert-symbol">▦</span><span>Table</span><select aria-label="Insert table" defaultValue="" onChange={e=>{const [r,c]=e.target.value.split('x').map(Number);if(r&&c)p.onTable(r,c);e.target.value=''}}><option value="">Choose size ▾</option>{[2,3,4,5,6].flatMap(r=>[2,3,4,5].map(c=><option key={r+'x'+c} value={r+'x'+c}>{c} columns × {r} rows</option>))}</select></label></Group>
+ <Group title="Tables"><TablePicker onInsert={p.onTable} onQuickTable={p.onQuickTable}/></Group>
  <Group title="Illustrations"><Item icon="▧" label="Pictures" onClick={p.onPicture}/><Item icon="◩" label="Shapes" disabled/><Stack><button disabled>◉ Icons</button><button disabled>♧ SmartArt</button><button disabled>▥ Chart</button></Stack></Group>
  <Group title="Links"><Stack><button onClick={p.onLink}>↗ Link</button><button onClick={p.onBookmark}>⚑ Bookmark</button><button disabled>↳ Cross-reference</button></Stack></Group>
  <Group title="Comments"><Item icon="▣" label="Comment" disabled/></Group>
