@@ -42,3 +42,6 @@ See [ROADMAP.md](ROADMAP.md) for milestones, [docs/COMPONENTS.md](docs/COMPONENT
 
 ### Alpha 12 — Word-style ribbon foundations
 Design, Layout, References, Review and View now follow the reference screenshots' group order and compact icon layout. Working controls: document theme previews, page colour, portrait/landscape orientation, margin presets, ruler/navigation visibility, zoom, Focus/fullscreen, and word-count reporting. Advanced layout, citations, review/track changes and other unsupported operations are visibly disabled rather than simulated. Collaboration, speech and previously excluded specialised tools remain out of scope. Working checkpoint: `backup/pre-design-layout-references-review-view-ribbons`. Browser/build verification is pending.
+
+### Alpha 13 — View ribbon routing fix
+Removed the obsolete View tab branch in `src/App.tsx`, which previously intercepted View before the new Word-style ribbon could render. View now uses `src/WordRibbons.tsx`, exposing Views, Immersive, Page Movement, Show, Zoom, Dark Mode, Window and Templates groups. Advanced functions remain disabled until implemented. Checkpoint: `backup/pre-view-ribbon-routing-fix`.
