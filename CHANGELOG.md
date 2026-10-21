@@ -1,3 +1,10 @@
+## 2.0.0-alpha.5 — Compact tabs and Insert ribbon
+- Matched the menu-tab typography more closely to V1.1: 13px regular-weight text, tighter padding, compact active state.
+- Added functional Insert ribbon groups for divider, line break, block quote, local date/time and five symbols.
+- Table, Picture and Link are explicitly disabled until their editor extensions are integrated, rather than appearing functional.
+- Kept the stable baseline workspace unchanged to avoid the previous blank-screen regressions.
+- Changes committed on `main`; deployment and browser validation pending.
+
 ## 2.0.0-alpha.3 — V1.1 visual continuity
 - Restored the thin blue `verbum.` wordmark and compact header with document name, quick save/undo/redo and fullscreen controls.
 - Rebuilt the ribbon into compact monoline icon groups, retaining Home order: Editing, Clipboard, Font, Paragraph, Styles.
