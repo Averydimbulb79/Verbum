@@ -1,3 +1,10 @@
+## 2.0.0-alpha.2 — Web editor interaction (build unverified)
+- Added working View controls for zoom (50–200%), 100% reset, and browser fullscreen.
+- Added live word count and zoom status.
+- Added Ctrl/Cmd+S download and Ctrl/Cmd+O open shortcuts.
+- Prevented duplicated `.verbum` filename extensions on export.
+- These changes are committed to `main`; browser build/deployment and manual interaction tests remain unverified.
+
 # Changelog
 
 ## Unreleased — Verbum 2.0 / Phase 0
