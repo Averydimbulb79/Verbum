@@ -64,3 +64,6 @@ Insert: editable basic tables (2–6 rows, 2–5 columns), embedded image files 
 
 ### Alpha 16 — Contextual Table ribbon
 When the editor selection enters a table cell, a contextual **Table** tab appears and opens automatically. It provides insertion of rows above/below, insertion of columns before/after, deletion of rows/columns, and deletion of the table. Leaving the table hides the contextual tab and restores Home. This first implementation rebuilds the table for structural edits; advanced cell styling, merging/splitting and preservation of complex selections are not yet supported. Rollback checkpoint: `backup/pre-contextual-table-tab`. Build/browser verification pending.
+
+### Alpha 17 — Word-style Insert Table menu
+The Insert > Table control now opens a 10-column by 8-row hover-preview grid. Clicking a cell inserts the selected dimensions. The Insert Table… submenu accepts precise dimensions (up to 30 columns and 100 rows). Quick Tables includes editable Calendar, Comparison and Schedule presets. Draw Table, Convert Text to Table and Excel Spreadsheet are visibly disabled until real implementations exist. The contextual Table ribbon from Alpha 16 remains. Rollback checkpoint: `backup/pre-table-insertion-grid`. Build and browser verification pending.
