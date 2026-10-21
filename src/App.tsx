@@ -1,3 +1,4 @@
+import FileWorkspace, { type FileSection, type TemplateId, type RecentDocument } from './FileWorkspace';
 import WordRibbons from './WordRibbons';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
@@ -33,7 +34,10 @@ export default function App() {
   const [fullScreen, setFullScreen] = useState(false);
   const [wordCount, setWordCount] = useState(0);
   const [fileOpen, setFileOpen] = useState(false);
-  const [fileSection, setFileSection] = useState('Home');
+  const [fileSection, setFileSection] = useState<FileSection>('Home');
+  const [recent, setRecent] = useState<RecentDocument[]>(()=>{try{return JSON.parse(localStorage.getItem('verbum-recent-v1')||'[]')}catch{return []}});
+  const [autoRecover,setAutoRecover]=useState(()=>localStorage.getItem('verbum-auto-recover')!=='false');
+  const [recoveryVersion,setRecoveryVersion]=useState(0);
   const [navigationQuery, setNavigationQuery] = useState('');
   const [navigationMode, setNavigationMode] = useState<'Headings'|'Pages'|'Results'>('Headings');
   const editor = useEditor({
@@ -62,12 +66,21 @@ export default function App() {
       else await document.documentElement.requestFullscreen();
     } catch { setNotice('Fullscreen is unavailable in this browser'); }
   };
-  function save() {
+  function download(content:string,extension:string,mime:string,fileName=name){
+    const blob=new Blob([content],{type:mime});const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download=(fileName.replace(/\\.[^.]+$/,'').replace(/[^a-z0-9 _.-]/gi,'_')||'Untitled document')+'.'+extension;a.click();
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+  }
+  function rememberDocument(docName:string,content:string){
+    const next=[{name:docName,modified:new Date().toISOString(),content},...recent.filter(d=>d.name!==docName)].slice(0,12);
+    try{localStorage.setItem('verbum-recent-v1',JSON.stringify(next));setRecent(next)}catch{setNotice('File saved, but browser history storage is full')}
+  }
+  function save(fileName=name) {
     if (!editor) return;
-    const blob = new Blob([serializeDocument(name, editor.getJSON())], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url; a.download = (name.replace(/\.verbum$/i, '').replace(/[^a-z0-9 _.-]/gi, '_') || 'Untitled document') + '.verbum'; a.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    const serialized=serializeDocument(fileName,editor.getJSON());
+    download(serialized,'verbum','application/json',fileName);
+    rememberDocument(fileName,serialized);
+    setName(fileName);
     setNotice('Saved structured .verbum file');
   }
   async function open(file?: File) {
@@ -75,7 +88,7 @@ export default function App() {
     try {
       const data = parseDocument(await file.text());
       editor.commands.setContent(data.content as Parameters<typeof editor.commands.setContent>[0]);
-      setName(data.name); setWordCount(editor.getText().trim().split(/\s+/).filter(Boolean).length); setNotice('Opened ' + file.name);
+      setName(data.name); setWordCount(editor.getText().trim().split(/\s+/).filter(Boolean).length); setNotice('Opened ' + file.name);setFileOpen(false);rememberDocument(data.name,serializeDocument(data.name,data.content));
     } catch (error) { setNotice(error instanceof Error ? error.message : 'Unable to open file'); }
   }
   const copyClipboard = async (cut: boolean) => {
@@ -98,26 +111,49 @@ export default function App() {
   const cmd = (label:string, icon:string, action:()=>void, pressed?:boolean) => <button key={label} title={label} aria-label={label} aria-pressed={pressed} onClick={action}><Glyph name={icon}/><span className="command-label">{label}</span></button>;
   const group = (title:string, children:ReactNode) => <section className="ribbon-group"><div className="ribbon-tools">{children}</div><small>{title}</small></section>;
   const outline = editor?.getJSON().content?.filter(node => node.type === 'heading').map((node,i) => ({ id:i, level:node.attrs?.level || 1, text:node.content?.map(c=>c.text || '').join('') || 'Untitled heading' })) || [];
-  const fileItems = ['Home','New','Open','Info','Recover','Save','Save As','Print','Export','Close','Options'];
-  const startTemplate = (kind: string) => {
-    if (!editor || !window.confirm('Create a new document? Unsaved changes will be lost.')) return;
-    const contents: Record<string,string> = {
-      'Blank document':'<p></p>',
-      'Letter':'<p>Dear Recipient,</p><p></p><p>Sincerely,</p><p>Your Name</p>',
-      'Résumé':'<h1>Your Name</h1><p>Contact information</p><h2>Experience</h2><p></p><h2>Education</h2><p></p><h2>Skills</h2><p></p>',
-      'Meeting notes':'<h1>Meeting Notes</h1><p>Date:</p><h2>Attendees</h2><p></p><h2>Agenda</h2><p></p><h2>Action Items</h2><p></p>'
+  const templateContent:Record<TemplateId,string> = {
+    'Blank document':'<p></p>',
+    'Letter':'<p style="text-align:right">[Date]</p><p>[Recipient Name]</p><p>[Address]</p><p>Dear [Recipient],</p><p>[Write your letter here.]</p><p>Yours sincerely,</p><p>[Your Name]</p>',
+    'Résumé':'<h1>Your Name</h1><p>Email · Phone · Location</p><h2>Professional Summary</h2><p>[Brief introduction]</p><h2>Work Experience</h2><p><strong>Job Title — Company</strong></p><p>[Responsibilities and achievements]</p><h2>Education</h2><p>[Qualification]</p><h2>Skills</h2><p>[Relevant skills]</p>',
+    'Meeting notes':'<h1>Meeting Notes</h1><p><strong>Date:</strong> [Date] · <strong>Location:</strong> [Location]</p><h2>Attendees</h2><p>[Names]</p><h2>Agenda</h2><ul><li>[Agenda item]</li></ul><h2>Discussion & Decisions</h2><p>[Notes]</p><h2>Action Items</h2><ul><li>[Owner] — [Task] — [Due date]</li></ul>',
+    'Report':'<h1>Report Title</h1><p>[Prepared by] · [Date]</p><h2>Executive Summary</h2><p>[Summary]</p><h2>Background</h2><p>[Context]</p><h2>Findings</h2><p>[Findings]</p><h2>Recommendations</h2><p>[Recommendations]</p>',
+    'Proposal':'<h1>Project Proposal</h1><p>[Author] · [Date]</p><h2>Overview</h2><p>[Purpose]</p><h2>Objectives</h2><p>[Goals]</p><h2>Scope</h2><p>[Deliverables]</p><h2>Timeline</h2><p>[Milestones]</p><h2>Budget</h2><p>[Costs]</p>',
+    'Newsletter':'<h1>Newsletter</h1><p>Issue [No.] · [Date]</p><h2>In This Issue</h2><p>[Introduction]</p><h2>Feature Story</h2><p>[Story]</p><h2>Updates</h2><p>[News]</p><h2>Upcoming Events</h2><p>[Dates]</p>',
+    'Invoice':'<h1>INVOICE</h1><p>[Your Company]</p><p>Invoice No.: [Number] · Date: [Date]</p><h2>Bill To</h2><p>[Customer]</p><h2>Items</h2><p>Description | Quantity | Price | Amount</p><p>[Item] | [Qty] | [Price] | [Amount]</p><h2>Total: [Amount]</h2><p>Payment terms: [Terms]</p>'
+  };
+  const startTemplate=(kind:TemplateId)=>{
+    if(!editor||!window.confirm('Create a new document? Unsaved changes will be lost.'))return;
+    editor.commands.setContent(templateContent[kind]);setName(kind==='Blank document'?'Untitled document':kind);
+    setWordCount(editor.getText().trim().split(/\\s+/).filter(Boolean).length);
+    setNotice('Created '+kind);setFileOpen(false);
+  };
+  const restoreRecent=(doc:RecentDocument)=>{
+    if(!editor||!window.confirm('Open '+doc.name+'? Unsaved changes will be lost.'))return;
+    try{const data=parseDocument(doc.content);editor.commands.setContent(data.content as Parameters<typeof editor.commands.setContent>[0]);setName(data.name);setFileOpen(false);setNotice('Opened '+data.name)}
+    catch{setNotice('Unable to open recent document')}
+  };
+  const recoverSnapshot=()=>{
+    if(!editor||!window.confirm('Restore the local recovery snapshot? Current unsaved changes will be lost.'))return;
+    try{const raw=localStorage.getItem('verbum-recovery-v1');if(!raw)throw Error('No recovery');const data=parseDocument(raw);editor.commands.setContent(data.content as Parameters<typeof editor.commands.setContent>[0]);setName(data.name);setFileOpen(false);setNotice('Recovery restored')}
+    catch{setNotice('Unable to restore recovery snapshot')}
+  };
+  const exportFile=(format:'verbum'|'html'|'txt')=>{
+    if(!editor)return;
+    if(format==='verbum'){save();return}
+    if(format==='html')download('<!doctype html><html><head><meta charset="utf-8"><title>'+name.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</title></head><body>'+editor.getHTML()+'</body></html>','html','text/html');
+    else download(editor.getText(),'txt','text/plain');
+    setNotice('Exported '+format.toUpperCase());
+  };
+  useEffect(()=>{
+    if(!editor||!autoRecover)return;
+    const snapshot=()=>{
+      try{localStorage.setItem('verbum-recovery-v1',serializeDocument(name,editor.getJSON()));setRecoveryVersion(v=>v+1)}catch{}
     };
-    editor.commands.setContent(contents[kind] || '<p></p>');setName(kind==='Blank document'?'Untitled document':kind);setWordCount(0);setFileOpen(false);
-  };
-  const fileAction = (item:string) => {
-    if(item==='Save'||item==='Save As'){save();return;}
-    if(item==='Open'){picker.current?.click();return;}
-    if(item==='Print'){setFileSection('Print');return;}
-    if(item==='Close'){setFileOpen(false);return;}
-    setFileSection(item);
-  };
+    const handle=window.setTimeout(snapshot,1200);
+    return ()=>window.clearTimeout(handle);
+  },[editor,name,wordCount,autoRecover]);
   return <div className={mobileRibbon ? 'app ribbon-open' : 'app'}>
-    <header className="titlebar"><span className="brand">verbum.</span><span className="version">v2.0.0-alpha.13</span><input className="document-name" aria-label="Document name" value={name} onChange={e => setName(e.target.value)} />
+    <header className="titlebar"><span className="brand">verbum.</span><span className="version">v2.0.0-alpha.14</span><input className="document-name" aria-label="Document name" value={name} onChange={e => setName(e.target.value)} />
       <div className="quick-actions">{cmd('Save document','save',save)}{cmd('Undo','undo',()=>run(()=>editor?.chain().focus().undo().run()))}{cmd('Redo','redo',()=>run(()=>editor?.chain().focus().redo().run()))}</div>
       <span className="save-state" title={notice}>{notice}</span>{cmd(fullScreen?'Exit fullscreen':'Fullscreen','fullscreen',()=>void toggleFullscreen())}
     </header>
@@ -149,16 +185,7 @@ export default function App() {
       <aside className={'side-pane styles-pane'+(stylesOpen?' pane-open':'')}><h3>Styles</h3><div className="styles-list"><button onClick={()=>run(()=>editor?.chain().focus().setParagraph().run())}>Normal</button><button onClick={()=>run(()=>editor?.chain().focus().toggleHeading({level:1}).run())}>Heading 1</button><button onClick={()=>run(()=>editor?.chain().focus().toggleHeading({level:2}).run())}>Heading 2</button></div></aside>
     </main>
     <footer className="statusbar"><span>{wordCount} words · {editor?.getText().length || 0} characters</span><span>A4 · Portrait · Verbum 2.0</span><span className="status-zoom"><button onClick={()=>setZoom(z=>Math.max(50,z-10))}>−</button><button onClick={()=>setZoom(100)}>Fit</button><output>{zoom}%</output><button onClick={()=>setZoom(z=>Math.min(200,z+10))}>+</button></span></footer>
-    {fileOpen && <div className="backstage" role="dialog" aria-modal="true" aria-label="File workspace">
-      <aside className="backstage-menu"><button className="backstage-back" onClick={()=>setFileOpen(false)} aria-label="Return to document">‹ <span>Back to document</span></button>{fileItems.map(item=><button key={item} className={fileSection===item?'selected':''} onClick={()=>fileAction(item)}><span className="backstage-menu-icon">{({Home:'⌂',New:'＋',Open:'▱',Info:'ⓘ',Recover:'↶',Save:'▣','Save As':'▤',Print:'▧',Export:'⇥',Close:'×',Options:'⚙'} as Record<string,string>)[item]}</span>{item}</button>)}<div className="backstage-menu-footer">verbum. <small>v2.0.0-alpha.9</small></div></aside>
-      <section className="backstage-content"><h1>{fileSection==='Home'?'Welcome to Verbum':fileSection}</h1>
-      {(fileSection==='Home'||fileSection==='New') && <><h2>Start a document</h2><div className="template-gallery">{['Blank document','Letter','Résumé','Meeting notes'].map((kind,i)=><button className="template-tile" key={kind} onClick={()=>startTemplate(kind)}><div className="template-preview"><span className="template-line heading"/>{i>0&&<><span className="template-line"/><span className="template-line short"/><span className="template-line"/><span className="template-line short"/></>}</div><span>{kind}</span></button>)}</div>{fileSection==='Home'&&<><h2>Recent</h2><p className="backstage-muted">Recent documents are not yet stored. Open a local .verbum document to continue editing.</p><button className="backstage-primary" onClick={()=>picker.current?.click()}>Browse files</button></>}</>}
-      {fileSection==='Open'&&<><p>Open a Verbum document from your device.</p><button className="backstage-primary" onClick={()=>picker.current?.click()}>Browse files</button></>}
-      {fileSection==='Info'&&<div className="backstage-info"><p><strong>Name:</strong> {name}</p><p><strong>Words:</strong> {wordCount}</p><p><strong>Format:</strong> Verbum native document (.verbum)</p><p><strong>Document protection:</strong> Not yet available</p></div>}
-      {fileSection==='Print'&&<><p>Print the current document using your browser's print dialog.</p><button className="backstage-primary" onClick={()=>window.print()}>Print document</button></>}
-      {fileSection==='Export'&&<><p>Download the editable native Verbum document.</p><button className="backstage-primary" onClick={save}>Export .verbum</button><p className="backstage-muted">PDF, DOCX and other export formats are planned.</p></>}
-      {['Recover','Options'].includes(fileSection)&&<p className="backstage-muted">This section is planned but not yet available.</p>}
-      </section></div>}
+    {fileOpen && <FileWorkspace section={fileSection} onSection={setFileSection} onBack={()=>setFileOpen(false)} name={name} words={wordCount} characters={editor?.getText().length||0} recent={recent} onTemplate={startTemplate} onOpen={()=>picker.current?.click()} onRecent={restoreRecent} onSave={()=>save()} onSaveAs={save} onPrint={()=>window.print()} onExport={exportFile} hasRecovery={Boolean(localStorage.getItem('verbum-recovery-v1'))} onRecover={recoverSnapshot} onDiscardRecovery={()=>{localStorage.removeItem('verbum-recovery-v1');setRecoveryVersion(v=>v+1)}} autoRecover={autoRecover} onAutoRecover={enabled=>{setAutoRecover(enabled);localStorage.setItem('verbum-auto-recover',String(enabled))}} onRename={setName} onClearRecent={()=>{setRecent([]);localStorage.removeItem('verbum-recent-v1')}} />}
     <input ref={picker} type="file" accept=".verbum,application/json" hidden onChange={e => { void open(e.target.files?.[0]); e.target.value = ''; }} />
   </div>;
 }
