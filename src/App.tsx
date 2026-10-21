@@ -20,6 +20,7 @@ const fontSizes = [8,9,10,11,12,14,16,18,20,22,24,26,28,36,48,72];
 const tabs = ['File', 'Home', 'Insert', 'Design', 'Layout', 'References', 'Review', 'View'];
 export default function App() {
   const [tab, setTab] = useState('Home');
+  const [tableActive,setTableActive]=useState(false);
   const [name, setName] = useState('Untitled document');
   const [notice, setNotice] = useState('Phase 0 prototype — not Word-compatible yet');
   const picker = useRef<HTMLInputElement>(null);
@@ -55,9 +56,31 @@ export default function App() {
     extensions: [StarterKit, ImageNode, PageBreakNode, LinkMark, TableNode, TableRowNode, TableCellNode, Underline, TextStyle, Color, FontFamily, FontSize, TextAlign.configure({ types: ['heading', 'paragraph'] })],
     content: '<h1>Welcome to Verbum 2.0</h1><p>This is the new structured editing engine prototype.</p>',
     onUpdate: ({ editor }) => setWordCount(editor.getText().trim().split(/\s+/).filter(Boolean).length),
+    onSelectionUpdate: ({editor})=>setTableActive(editor.isActive('table')),
+    onTransaction: ({editor})=>setTableActive(editor.isActive('table')),
     editorProps: { attributes: { 'aria-label': 'Document editor', class: 'editor-content' } },
   });
   const run = (fn: () => void) => { fn(); editor?.commands.focus(); };
+  const tableAction=(action:'rowAbove'|'rowBelow'|'colBefore'|'colAfter'|'deleteRow'|'deleteColumn'|'deleteTable')=>{
+    if(!editor)return;
+    const {$from}=editor.state.selection;
+    let cellDepth=-1,rowDepth=-1,tableDepth=-1;
+    for(let d=$from.depth;d>=0;d--){const n=$from.node(d).type.name;if(n==='tableCell'&&cellDepth<0)cellDepth=d;if(n==='tableRow'&&rowDepth<0)rowDepth=d;if(n==='table'&&tableDepth<0)tableDepth=d;}
+    if(tableDepth<0)return;
+    const table=$from.node(tableDepth),tablePos=$from.before(tableDepth);
+    const row=rowDepth>=0?$from.index(tableDepth):0;
+    const col=cellDepth>=0?$from.index(rowDepth):0;
+    const rows=table.content.content.map(r=>r.content.content.map(c=>c.toJSON()));
+    const blank=()=>({type:'tableCell',content:[{type:'paragraph'}]});
+    if(action==='deleteTable'){editor.chain().focus().command(({tr,dispatch})=>{if(dispatch)dispatch(tr.delete(tablePos,tablePos+table.nodeSize));return true}).run();return;}
+    if(action==='rowAbove'||action==='rowBelow')rows.splice(row+(action==='rowBelow'?1:0),0,Array.from({length:rows[0]?.length||1},blank));
+    if(action==='colBefore'||action==='colAfter')rows.forEach(r=>r.splice(col+(action==='colAfter'?1:0),0,blank()));
+    if(action==='deleteRow'){if(rows.length===1){setNotice('Delete the table instead of its final row');return}rows.splice(row,1)}
+    if(action==='deleteColumn'){if(rows[0]?.length===1){setNotice('Delete the table instead of its final column');return}rows.forEach(r=>r.splice(col,1))}
+    const replacement={type:'table',content:rows.map(cells=>({type:'tableRow',content:cells}))};
+    editor.chain().focus().command(({tr,dispatch})=>{if(dispatch)dispatch(tr.replaceWith(tablePos,tablePos+table.nodeSize,editor.schema.nodeFromJSON(replacement)));return true}).run();
+  };
+
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') { event.preventDefault(); save(); }
@@ -164,15 +187,18 @@ export default function App() {
     return ()=>window.clearTimeout(handle);
   },[editor,name,wordCount,autoRecover]);
   return <div className={mobileRibbon ? 'app ribbon-open' : 'app'}>
-    <header className="titlebar"><span className="brand">verbum.</span><span className="version">v2.0.0-alpha.15</span><input className="document-name" aria-label="Document name" value={name} onChange={e => setName(e.target.value)} />
+    <header className="titlebar"><span className="brand">verbum.</span><span className="version">v2.0.0-alpha.16</span><input className="document-name" aria-label="Document name" value={name} onChange={e => setName(e.target.value)} />
       <div className="quick-actions">{cmd('Save document','save',()=>save())}{cmd('Undo','undo',()=>run(()=>editor?.chain().focus().undo().run()))}{cmd('Redo','redo',()=>run(()=>editor?.chain().focus().redo().run()))}</div>
       <span className="save-state" title={notice}>{notice}</span>{cmd(fullScreen?'Exit fullscreen':'Fullscreen','fullscreen',()=>void toggleFullscreen())}
     </header>
-    <nav className="tabs" aria-label="Ribbon tabs">{tabs.map(t => <button key={t} className={tab === t ? 'active' : ''} onClick={() => {if(t==='File'){setFileOpen(true);setFileSection('Home');}else{setTab(t);setFileOpen(false);}setMobileRibbon(false);}}>{t}</button>)}</nav>
+    <nav className="tabs" aria-label="Ribbon tabs">{[...tabs,...(tableActive?['Table']:[])].map(t => <button key={t} className={(tab === t ? 'active ' : '')+(t==='Table'?'contextual-tab':'')} onClick={() => {if(t==='File'){setFileOpen(true);setFileSection('Home');}else{setTab(t);setFileOpen(false);}setMobileRibbon(false);}}>{t}</button>)}</nav>
     <div className="mobile-controls"><button onClick={()=>setMobileRibbon(v=>!v)} aria-expanded={mobileRibbon}>☰ Tabs</button><button onClick={()=>{setNavOpen(v=>!v);setStylesOpen(false)}}>☰ Outline</button><button onClick={()=>{setStylesOpen(v=>!v);setNavOpen(false)}}>Styles</button></div>
     {mobileRibbon && <button className="drawer-backdrop" aria-label="Close ribbon" onClick={()=>setMobileRibbon(false)}/>}
     <div className="ribbon" role="toolbar" aria-label={tab + ' ribbon'}>
-      {tab === 'Home' ? <>
+      {tab === 'Table' && tableActive ? <>
+        {group('Rows & Columns',<><button onClick={()=>tableAction('rowAbove')}>↑ Insert Row</button><button onClick={()=>tableAction('rowBelow')}>↓ Insert Row</button><button onClick={()=>tableAction('colBefore')}>← Insert Column</button><button onClick={()=>tableAction('colAfter')}>→ Insert Column</button></>)}
+        {group('Delete',<><button onClick={()=>tableAction('deleteRow')}>Delete Row</button><button onClick={()=>tableAction('deleteColumn')}>Delete Column</button><button onClick={()=>tableAction('deleteTable')}>Delete Table</button></>)}
+      </> : tab === 'Home' ? <>
         
         {group('Clipboard',<><div className="clipboard-layout"><div className="paste-major">{cmd('Paste','paste',()=>void pasteClipboard())}<span>Paste</span></div><div className="clipboard-minor">{cmd('Cut','cut',()=>void copyClipboard(true))}{cmd('Copy','copy',()=>void copyClipboard(false))}<button title="Format Painter is planned" disabled><Glyph name="copy"/><span>Format</span></button></div></div></>)}
         {group('Font',<><div className="font-controls"><select aria-label="Font family" defaultValue="Arial" onChange={e=>run(()=>editor?.chain().focus().setFontFamily(e.target.value).run())}>{googleFonts.map(font=><option key={font}>{font}</option>)}</select><select aria-label="Font size" defaultValue="11" onChange={e=>setFontSize(Number(e.target.value))}>{fontSizes.map(size=><option key={size}>{size}</option>)}</select><button title="Increase font size" onClick={()=>stepFontSize(1)}>A+</button><button title="Decrease font size" onClick={()=>stepFontSize(-1)}>A−</button></div><div className="font-buttons">{cmd('Bold','bold',()=>run(()=>editor?.chain().focus().toggleBold().run()),editor?.isActive('bold'))}{cmd('Italic','italic',()=>run(()=>editor?.chain().focus().toggleItalic().run()),editor?.isActive('italic'))}{cmd('Underline','underline',()=>run(()=>editor?.chain().focus().toggleUnderline().run()),editor?.isActive('underline'))}<button title="Strike through" onClick={()=>run(()=>editor?.chain().focus().toggleStrike().run())}>S̶</button><label className="color-picker" title="Font colour">A<input type="color" aria-label="Font colour" defaultValue="#202020" onChange={e=>run(()=>editor?.chain().focus().setColor(e.target.value).run())}/></label><button title="Clear formatting" onClick={()=>run(()=>editor?.chain().focus().unsetAllMarks().run())}>Tx</button></div></>)}
