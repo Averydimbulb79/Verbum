@@ -53,3 +53,8 @@ Removed the obsolete View tab branch in `src/App.tsx`, which previously intercep
 - Export supports editable `.verbum`, HTML and plain text. PDF is available through the browser Print → Save as PDF workflow; DOCX/RTF remain future work.
 - Native `.verbum` remains the preservation format. Template creation asks before replacing the current document.
 - Rollback checkpoint: `backup/pre-file-workspace-completion`. Browser build verification is pending.
+
+### Alpha 15 — Template previews and recovery controls
+- Replaced generic template thumbnail lines with distinct miniature document layouts for letters, résumés, meeting notes, reports, proposals, newsletters and invoices.
+- Styled the Recover screen's Discard snapshot as a clearly identifiable secondary destructive action, consistent with the primary Restore button.
+- The thumbnails are visual previews; fully styled editable document templates and browser verification remain separate follow-up work.
