@@ -68,3 +68,16 @@
 .style-gallery{display:flex;gap:3px;align-items:stretch}.style-preview{min-width:74px;min-height:63px!important;padding:5px 4px!important;display:flex!important;flex-direction:column;align-items:center;justify-content:space-between!important;gap:7px;border:1px solid transparent!important}.style-preview span{font-size:15px;letter-spacing:-1px}.style-preview small{font-size:10px;color:#444}.style-preview:nth-child(3) span,.style-preview:nth-child(4) span{color:#225775;font-size:17px}.style-preview.style-selected{background:#e9edfa;border-color:#6688e9!important}
 .editing-actions{display:flex;flex-direction:column;gap:1px}.editing-actions button{height:24px;min-height:24px!important;justify-content:flex-start;gap:5px;font-size:11px;padding:2px 5px!important}.editing-actions svg{width:14px;height:14px}
 @media(max-width:760px){.clipboard-layout,.style-gallery{flex-wrap:wrap}.paragraph-grid{grid-template-columns:repeat(3,32px)}}
+
+/* Microsoft Word Insert ribbon: primary icons, stacked secondary controls, group captions. */
+.insert-stack{display:flex;flex-direction:column;justify-content:flex-start;gap:1px;min-width:104px}
+.insert-stack button{min-height:24px!important;height:24px;padding:2px 5px!important;display:flex!important;align-items:center;justify-content:flex-start;gap:6px;font-size:12px;white-space:nowrap}
+.insert-stack svg{width:16px;height:16px}
+.insert-cluster{display:flex;align-items:flex-start;gap:7px}
+.insert-cluster>button,.insert-major>button{display:flex!important;flex-direction:column;align-items:center;justify-content:flex-start;gap:5px;min-height:68px!important;min-width:62px!important;font-size:12px;white-space:nowrap;padding:3px 5px!important}
+.insert-symbol{font-size:30px;line-height:34px;color:#385aa8;font-family:Arial,sans-serif;font-weight:400}
+.insert-symbol-menu{display:flex;flex-direction:column;align-items:center;gap:5px}.insert-symbol-menu select{font-size:12px;border:0;background:transparent;color:#333;max-width:95px}
+.ribbon-group:has(.insert-stack),.ribbon-group:has(.insert-cluster),.ribbon-group:has(.insert-major){padding-left:10px;padding-right:10px}
+.ribbon-group:has(.insert-stack) .ribbon-tools,.ribbon-group:has(.insert-cluster) .ribbon-tools,.ribbon-group:has(.insert-major) .ribbon-tools{align-items:flex-start}
+.ribbon-group:has(.insert-stack) small,.ribbon-group:has(.insert-cluster) small,.ribbon-group:has(.insert-major) small{white-space:nowrap}
+@media(min-width:761px){.ribbon:has(.insert-cluster){min-height:110px;max-height:122px}}
