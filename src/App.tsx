@@ -56,11 +56,12 @@ export default function App() {
     extensions: [StarterKit, ImageNode, PageBreakNode, LinkMark, TableNode, TableRowNode, TableCellNode, Underline, TextStyle, Color, FontFamily, FontSize, TextAlign.configure({ types: ['heading', 'paragraph'] })],
     content: '<h1>Welcome to Verbum 2.0</h1><p>This is the new structured editing engine prototype.</p>',
     onUpdate: ({ editor }) => setWordCount(editor.getText().trim().split(/\s+/).filter(Boolean).length),
-    onSelectionUpdate: ({editor})=>setTableActive(editor.isActive('table')),
+    onSelectionUpdate: ({editor})=>{const active=editor.isActive('table');setTableActive(active);if(active)setTab(current=>current==='Table'?current:'Table')},
     onTransaction: ({editor})=>setTableActive(editor.isActive('table')),
     editorProps: { attributes: { 'aria-label': 'Document editor', class: 'editor-content' } },
   });
   const run = (fn: () => void) => { fn(); editor?.commands.focus(); };
+  useEffect(()=>{if(!tableActive&&tab==='Table')setTab('Home')},[tableActive,tab]);
   const tableAction=(action:'rowAbove'|'rowBelow'|'colBefore'|'colAfter'|'deleteRow'|'deleteColumn'|'deleteTable')=>{
     if(!editor)return;
     const {$from}=editor.state.selection;
