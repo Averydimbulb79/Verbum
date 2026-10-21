@@ -1,6 +1,6 @@
 # Verbum 2.0 — Development roadmap
 
-Status: Phase 0 (component validation). Production stays on main. Work occurs on rewrite/v2.
+Status: Phase 0 / initial 2.0 scaffolding committed (unvalidated). Production stays on main. Work occurs on rewrite/v2.
 
 ## Product objective
 Progressively mirror Microsoft Word desktop editing behaviour, workflows, supported functions and document fidelity, excluding cloud collaboration, Mailings and previously rejected features. Maintain an independent Verbum interface, fast interaction, offline-first storage, browser delivery and Windows Electron packaging.
@@ -46,6 +46,9 @@ Progressively mirror Microsoft Word desktop editing behaviour, workflows, suppor
 6. Build representative 5-, 50-, 200- and 500-page fixtures.
 7. Establish GitHub Actions for web validation and Windows packaging.
 8. Decide whether any WordCraft Rust/WASM components are worth integrating after a document-model feasibility test.
+
+### Initial scaffold checkpoint
+React/TypeScript/Vite, Tiptap core prototype, basic ribbon, v3 native document serialization, unit tests, Electron main process and Windows/web GitHub Actions workflow are committed. Compilation, Windows packaging, browser QA, migration and engine benchmarking have not been verified. A dependency lockfile is still required before CI can use reproducible npm ci.
 
 ## Release management
 - main: existing published application until v2 acceptance.
