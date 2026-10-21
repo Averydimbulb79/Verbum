@@ -19,3 +19,21 @@
 .tabs button{font-size:12px;font-weight:400;line-height:17px;padding:6px 9px}.tabs button.active{font-weight:500}
 .ribbon-group:has(.font-controls) .ribbon-tools{flex-direction:column;align-items:stretch;justify-content:center;gap:5px}.font-controls,.font-buttons{display:flex;align-items:center;gap:4px}.font-controls select{border:1px solid #d9e1ed;border-radius:4px;background:white;color:#263448;font-size:12px;padding:5px}.font-controls select:first-child{width:145px}.font-controls select:nth-child(2){width:58px}.font-controls button{font-size:12px;min-width:30px}.font-buttons button{min-width:28px;min-height:27px;padding:4px}.color-picker{display:inline-flex;align-items:center;gap:3px;padding:2px 5px;font-size:14px;font-weight:700;border:1px solid #e4e9f0;border-radius:4px;cursor:pointer}.color-picker input{width:20px;height:22px;border:0;padding:0;background:transparent;cursor:pointer}.ribbon-group:has(.font-controls){min-width:330px}.ribbon-group:has(.font-controls) small{margin-top:0}
 @media(max-width:760px){.ribbon-group:has(.font-controls){min-width:0}.font-controls{flex-wrap:wrap}}
+
+/* WordCraft-inspired compact desktop chrome, preserving the Alpha 4 editor and page metrics. */
+@media(min-width:761px){
+.titlebar{min-height:42px;height:42px;padding:4px 12px;background:#f5f5f5;gap:9px}
+.brand{font-size:20px}.document-name{margin-left:auto;margin-right:auto;text-align:center;font-size:12px;font-weight:600;width:260px}.save-state{font-size:11px;max-width:145px}
+.tabs{height:35px;align-items:stretch;padding:0 12px;background:#f8f8f8;gap:2px}.tabs button{font-size:12px;padding:5px 9px}.tabs button.active{border-bottom:2px solid #4565c7}
+.ribbon{min-height:98px;max-height:112px;padding:5px 8px;box-shadow:none;border-bottom:1px solid #d7d7d7}
+.ribbon-group{padding:3px 9px;gap:5px;border-right-color:#e3e3e3}.ribbon-group small{font-size:10px;color:#7a7a7a}
+.ribbon-tools button{min-width:27px;min-height:27px;padding:5px;border-color:transparent;border-radius:3px}.ribbon-tools button:hover{border-color:#d8e0ef}
+.workspace{gap:0;padding:0 0 24px;background:#e5e5e5;align-items:stretch}
+.side-pane.navigation-pane{position:sticky;top:0;align-self:stretch;max-height:none;width:276px;min-width:276px;border:0;border-right:1px solid #d4d4d4;border-radius:0;padding:13px 12px;background:#fafafa}
+.navigation-pane h3{font-size:16px;margin:1px 0 12px}.document-area{padding:5px 28px 40px;justify-content:center}.document-stage{margin:0 auto}.paper{box-shadow:0 1px 3px #0002}
+.styles-pane{display:none}.statusbar{height:28px;padding:3px 12px;background:#f6f6f6;font-size:11px;color:#646464}
+}
+.navigation-search{display:block;width:100%;border:1px solid #d0d0d0;border-radius:4px;background:#fff;font-size:12px;padding:5px 7px;margin-bottom:8px}
+.navigation-modes{display:flex;gap:3px;padding-bottom:7px;margin-bottom:8px;border-bottom:1px solid #dedede}
+.navigation-modes button{padding:5px 9px;font-size:12px}.navigation-modes button.selected{background:#dce4ff;color:#3459c5}
+.outline-item{padding:6px 8px;font-size:12px}.outline-item.h1{font-weight:600}
