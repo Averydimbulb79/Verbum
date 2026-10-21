@@ -201,3 +201,25 @@
 
 /* Contextual table tools */
 .tabs button.contextual-tab{color:#365cc3;font-weight:700;border-top:2px solid #5279e5;background:#eef3ff}.tabs button.contextual-tab.active{border-bottom:3px solid #365cc3}.ribbon:has(.contextual-table-group) button{font-size:12px}
+
+/* Word-style interactive table insertion picker */
+.table-picker{position:relative;min-width:70px}
+.table-picker-trigger{display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:70px!important;min-width:67px!important;border:1px solid transparent!important;border-radius:3px!important;font-size:12px}
+.table-picker-trigger:hover,.table-picker-trigger.selected{background:#e8edf8!important;border-color:#b9c8e8!important}
+.table-picker-trigger .insert-symbol{font-size:31px;line-height:34px;color:#43536c}
+.table-picker-menu{position:absolute;top:calc(100% + 5px);left:0;z-index:250;background:#fff;border:1px solid #8c929c;border-radius:5px;box-shadow:0 8px 24px #0003;padding:14px 15px 6px;width:306px;color:#242b37;font-size:13px}
+.table-picker-menu>strong{font-size:14px;font-weight:650;display:block;margin-bottom:7px}
+.table-picker-caption{font-size:11px;color:#5e6a7d;min-height:20px;margin-bottom:5px}
+.table-picker-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:3px;margin-bottom:13px}
+.table-picker-grid button{aspect-ratio:1;border:1px solid #aab0bb!important;border-radius:0!important;background:#fff!important;min-width:0!important;min-height:0!important;padding:0!important}
+.table-picker-grid button:hover,.table-picker-grid button.highlighted{background:#c7d8f7!important;border-color:#4471c5!important}
+.table-picker-actions{border-top:1px solid #e2e5eb;margin:0 -15px;padding:5px 0}
+.table-picker-actions>button,.quick-table-options>button{display:block;width:100%;text-align:left;padding:9px 15px!important;font-size:12px;min-height:34px}
+.table-picker-actions>button:hover:not(:disabled),.quick-table-options>button:hover{background:#edf2ff}
+.table-picker-actions>button:disabled{opacity:.42;cursor:not-allowed}
+.table-dimensions{display:flex;align-items:end;gap:8px;padding:9px 13px;background:#f3f6fb}
+.table-dimensions label{display:flex;flex-direction:column;font-size:11px;gap:3px}
+.table-dimensions input{width:58px;border:1px solid #b6bfd0;border-radius:3px;padding:5px}
+.table-dimensions button{background:#365fce;color:white;border-radius:4px;padding:6px 10px}
+.quick-table-options{background:#f5f7fc;border-left:3px solid #5b7fd5}
+@media(max-width:760px){.table-picker-menu{left:-65px;width:min(306px,calc(100vw - 30px))}}
