@@ -1,3 +1,9 @@
+## 2.0.0-alpha.6 — UI restoration after regression
+- Restored the V1.1-style thin blue `verbum.` logo, monoline icon toolbar, compact tabs, navigation/styles sidebars and bottom status bar.
+- Retained the functional Insert ribbon added in alpha.5 (divider, line break, quote, date/time and symbols).
+- Kept React render error boundary from previous hotfix.
+- This commit is not a verified browser build; visual QA and CI validation are still required.
+
 ## 2.0.0-alpha.5 — Compact tabs and Insert ribbon
 - Matched the menu-tab typography more closely to V1.1: 13px regular-weight text, tighter padding, compact active state.
 - Added functional Insert ribbon groups for divider, line break, block quote, local date/time and five symbols.
