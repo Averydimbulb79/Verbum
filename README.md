@@ -39,3 +39,6 @@ The Vite development server prints a local URL, usually `http://localhost:5173/`
 - Windows packaging scripts exist but are not proof of a tested executable.
 
 See [ROADMAP.md](ROADMAP.md) for milestones, [docs/COMPONENTS.md](docs/COMPONENTS.md) for engine choices, and [CHANGELOG.md](CHANGELOG.md) for release history.
+
+### Alpha 12 — Word-style ribbon foundations
+Design, Layout, References, Review and View now follow the reference screenshots' group order and compact icon layout. Working controls: document theme previews, page colour, portrait/landscape orientation, margin presets, ruler/navigation visibility, zoom, Focus/fullscreen, and word-count reporting. Advanced layout, citations, review/track changes and other unsupported operations are visibly disabled rather than simulated. Collaboration, speech and previously excluded specialised tools remain out of scope. Working checkpoint: `backup/pre-design-layout-references-review-view-ribbons`. Browser/build verification is pending.
