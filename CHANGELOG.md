@@ -1,3 +1,11 @@
+## 2.0.0-alpha.3 — V1.1 visual continuity
+- Restored the thin blue `verbum.` wordmark and compact header with document name, quick save/undo/redo and fullscreen controls.
+- Rebuilt the ribbon into compact monoline icon groups, retaining Home order: Editing, Clipboard, Font, Paragraph, Styles.
+- Recreated the three-column document workspace, navigation and styles panes, ruler visuals, A4 paper dimensions and bottom status/zoom placement.
+- Added mobile tab drawer and pane toggles; existing editing commands remain wired to Tiptap.
+- Rulers are visual guides, not draggable measurement controls; unsupported functions remain pending.
+- Browser deployment and manual visual QA still require confirmation.
+
 ## 2.0.0-alpha.2 — Web editor interaction (build unverified)
 - Added working View controls for zoom (50–200%), 100% reset, and browser fullscreen.
 - Added live word count and zoom status.
