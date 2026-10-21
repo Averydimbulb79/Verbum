@@ -1,15 +1,17 @@
 {
   "name": "verbum",
   "private": true,
-  "version": "2.0.0-alpha.0",
+  "version": "2.0.0-alpha.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "desktop:dev": "npm run build && electron .",
-    "desktop:pack": "npm run build && electron-builder --win nsis portable"
+    "desktop:dev": "npm run build:desktop && electron .",
+    "desktop:pack": "npm run build:desktop && electron-builder --win nsis portable --publish never",
+    "build:desktop": "tsc -b && vite build --base ./",
+    "check": "npm test && npm run build"
   },
   "dependencies": {
     "@tiptap/react": "^2.11.7",
