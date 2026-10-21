@@ -12,3 +12,6 @@
 .ruler-vertical-printable span{font-size:9px;color:#52677d;line-height:11px;background:#f6f8fa;width:12px;text-align:center}
 .paper{width:210mm;min-height:297mm;padding:var(--page-margin)}
 @media print{.horizontal-ruler,.vertical-ruler{display:none!important}}
+
+/* Insert ribbon uses existing alpha4 group layout and icon sizing. */
+.ribbon-tools button:disabled{opacity:.42;cursor:not-allowed}.ribbon-tools button:disabled:hover{background:transparent}
