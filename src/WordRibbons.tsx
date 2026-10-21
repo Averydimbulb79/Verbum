@@ -22,6 +22,12 @@ type Props = {
  onPrint: () => void;
  onFullscreen: () => void;
  onWordCount: () => void;
+ designFont:string;setDesignFont:(font:string)=>void;
+ designSpacing:number;setDesignSpacing:(n:number)=>void;
+ designColor:string;setDesignColor:(v:string)=>void;
+ watermark:string;setWatermark:(v:string)=>void;
+ pageBorder:string;setPageBorder:(v:string)=>void;
+ onSetDefault:()=>void;
 };
 
 function Group({name,children}:{name:string;children:ReactNode}) {
@@ -37,9 +43,14 @@ export default function WordRibbons(p:Props) {
   <Group name="Themes"><Action icon="▦" label="Themes" onClick={()=>p.setTheme(p.theme==='Classic'?'Modern':'Classic')}/></Group>
   <Group name="Document Formatting">
    <div className="word-theme-gallery">{['Classic','Modern','Elegant','Minimal','Formal','Contemporary'].map(t=><button key={t} className={'word-theme-tile '+(p.theme===t?'selected':'')} onClick={()=>p.setTheme(t)}><strong>Title</strong><span>Heading 1</span><small>Body text sample</small></button>)}</div>
-   <Stack><Small label="Colors ▾" disabled/><Small label="Fonts ▾" disabled/><Small label="Paragraph Spacing ▾" disabled/><Small label="Effects ▾" disabled/><Small label="Set as Default" disabled/></Stack>
+   <Stack>
+    <label className="word-small">Colors <input type="color" aria-label="Theme accent color" value={p.designColor} onChange={e=>p.setDesignColor(e.target.value)}/></label>
+    <label className="word-small">Fonts <select aria-label="Document theme font" value={p.designFont} onChange={e=>p.setDesignFont(e.target.value)}>{['Arial','Calibri','Georgia','Roboto','Open Sans','Lato','Montserrat','Merriweather','Playfair Display','Inter','Noto Sans','Noto Serif'].map(f=><option key={f}>{f}</option>)}</select></label>
+    <label className="word-small">Paragraph Spacing <select aria-label="Document paragraph spacing" value={p.designSpacing} onChange={e=>p.setDesignSpacing(Number(e.target.value))}><option value={1}>Compact</option><option value={1.3}>Normal</option><option value={1.6}>Relaxed</option><option value={2}>Double</option></select></label>
+    <Small label="Effects ▾" disabled/><Small label="Set as Default" onClick={p.onSetDefault}/>
+   </Stack>
   </Group>
-  <Group name="Page Background"><Action icon="W" label="Watermark" disabled/><label className="word-color-action"><span className="word-action-icon">▧</span><span>Page Color</span><input type="color" aria-label="Page Color" value={p.pageColor} onChange={e=>p.setPageColor(e.target.value)}/></label><Action icon="▣" label="Page Borders" disabled/></Group>
+  <Group name="Page Background"><label className="word-color-action"><span className="word-action-icon">W</span><span>Watermark</span><select aria-label="Watermark" value={p.watermark} onChange={e=>p.setWatermark(e.target.value)}><option value="">None</option><option value="DRAFT">DRAFT</option><option value="CONFIDENTIAL">CONFIDENTIAL</option><option value="SAMPLE">SAMPLE</option></select></label><label className="word-color-action"><span className="word-action-icon">▧</span><span>Page Color</span><input type="color" aria-label="Page Color" value={p.pageColor} onChange={e=>p.setPageColor(e.target.value)}/></label><label className="word-color-action"><span className="word-action-icon">▣</span><span>Page Borders</span><select aria-label="Page border" value={p.pageBorder} onChange={e=>p.setPageBorder(e.target.value)}><option value="none">None</option><option value="solid">Box</option><option value="double">Double</option><option value="dashed">Dashed</option></select></label></Group>
  </>;
  if (p.tab==='Layout') return <>
   <Group name="Page Setup">
