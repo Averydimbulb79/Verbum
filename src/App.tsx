@@ -33,6 +33,11 @@ export default function App() {
       setName(data.name); setNotice('Opened ' + file.name);
     } catch (error) { setNotice(error instanceof Error ? error.message : 'Unable to open file'); }
   }
+  const insertText = (text: string) => run(() => editor?.chain().focus().insertContent(text).run());
+  const insertDate = () => insertText(new Intl.DateTimeFormat(undefined, { dateStyle: 'long' }).format(new Date()));
+  const insertTime = () => insertText(new Intl.DateTimeFormat(undefined, { timeStyle: 'short' }).format(new Date()));
+  const insertRule = () => run(() => editor?.chain().focus().setHorizontalRule().run());
+  const insertQuote = () => run(() => editor?.chain().focus().toggleBlockquote().run());
   return <div className="app">
     <header className="titlebar"><span className="brand">VERBUM <small>2.0 alpha</small></span><input aria-label="Document name" value={name} onChange={e => setName(e.target.value)} /><span className="status">{notice}</span></header>
     <nav className="tabs" aria-label="Ribbon tabs">{tabs.map(t => <button key={t} className={tab === t ? 'active' : ''} onClick={() => setTab(t)}>{t}</button>)}</nav>
@@ -43,7 +48,12 @@ export default function App() {
         <section><small>Font</small><button aria-pressed={editor?.isActive('bold')} onClick={() => run(() => editor?.chain().focus().toggleBold().run())}><b>B</b></button><button aria-pressed={editor?.isActive('italic')} onClick={() => run(() => editor?.chain().focus().toggleItalic().run())}><i>I</i></button><button aria-pressed={editor?.isActive('underline')} onClick={() => run(() => editor?.chain().focus().toggleUnderline().run())}><u>U</u></button></section>
         <section><small>Paragraph</small><button onClick={() => run(() => editor?.chain().focus().toggleBulletList().run())}>Bullets</button><button onClick={() => run(() => editor?.chain().focus().toggleOrderedList().run())}>Numbering</button><button onClick={() => run(() => editor?.chain().focus().setTextAlign('left').run())}>Left</button><button onClick={() => run(() => editor?.chain().focus().setTextAlign('center').run())}>Centre</button><button onClick={() => run(() => editor?.chain().focus().setTextAlign('right').run())}>Right</button></section>
         <section><small>Styles</small><button onClick={() => run(() => editor?.chain().focus().setParagraph().run())}>Normal</button><button onClick={() => run(() => editor?.chain().focus().toggleHeading({ level: 1 }).run())}>Heading 1</button><button onClick={() => run(() => editor?.chain().focus().toggleHeading({ level: 2 }).run())}>Heading 2</button></section>
-      </> : tab === 'File' ? <section><small>Document</small><button onClick={() => { if (confirm('Start a new document? Unsaved changes will be lost.')) { editor?.commands.setContent('<p></p>'); setName('Untitled document'); } }}>New</button><button onClick={() => picker.current?.click()}>Open</button><button onClick={save}>Save As</button></section> : <section><small>{tab}</small><span className="placeholder">Planned — no placeholder commands</span></section>}
+      </> : tab === 'File' ? <section><small>Document</small><button onClick={() => { if (confirm('Start a new document? Unsaved changes will be lost.')) { editor?.commands.setContent('<p></p>'); setName('Untitled document'); } }}>New</button><button onClick={() => picker.current?.click()}>Open</button><button onClick={save}>Save As</button></section> : tab === 'Insert' ? <>
+        <section className="insert-group"><small>Pages</small><button title="Insert a horizontal divider" onClick={insertRule}>Divider</button><button title="Insert a line break" onClick={() => run(() => editor?.chain().focus().setHardBreak().run())}>Line Break</button></section>
+        <section className="insert-group"><small>Text</small><button title="Toggle a quotation block" onClick={insertQuote}>Quote</button><button title="Insert today's date" onClick={insertDate}>Date</button><button title="Insert current local time" onClick={insertTime}>Time</button></section>
+        <section className="insert-group"><small>Symbols</small><button title="Insert copyright symbol" onClick={() => insertText('©')}>©</button><button title="Insert registered trademark symbol" onClick={() => insertText('®')}>®</button><button title="Insert em dash" onClick={() => insertText('—')}>—</button><button title="Insert bullet symbol" onClick={() => insertText('•')}>•</button><button title="Insert degree symbol" onClick={() => insertText('°')}>°</button></section>
+        <section className="insert-group"><small>Coming next</small><button disabled title="Table insertion requires the table extension">Table</button><button disabled title="Image insertion requires the image extension">Picture</button><button disabled title="Hyperlinks require the link extension">Link</button></section>
+      </> : <section><small>{tab}</small><span className="placeholder">Planned — no placeholder commands</span></section>}
     </div>
     <main className="workspace"><article className="paper"><EditorContent editor={editor} /></article></main>
     <footer>Verbum 2.0 · Structured editor prototype · No pagination or DOCX fidelity yet</footer>
