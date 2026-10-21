@@ -5,7 +5,7 @@ A free, single-user, browser-based word processor with a familiar ribbon interfa
 
 **App URL (after GitHub Pages activation):** https://averydimbulb79.github.io/Verbum/
 
-## Current development version: 1.1.0-alpha.2
+## Current development version: 1.1.0-alpha.3
 
 | Area | Implemented |
 | --- | --- |
@@ -34,6 +34,11 @@ A free, single-user, browser-based word processor with a familiar ribbon interfa
 Open index.html in a modern browser, or enable GitHub Pages under Settings → Pages → Deploy from a branch → main → /(root).
 
 ## 1.1 development checkpoints
+
+### 1.1.0-alpha.3
+- Fixed desktop ribbon command groups wrapping onto a second row when horizontal space is limited.
+- Ribbon now stays one row and scrolls horizontally; mobile compact popup behaviour remains unchanged.
+
 
 ### 1.1.0-alpha.2
 - Created rollback branch `backup/pre-1.1-alpha2`.
