@@ -25,6 +25,8 @@ export default function App() {
   const [stylesOpen, setStylesOpen] = useState(false);
   const [fullScreen, setFullScreen] = useState(false);
   const [wordCount, setWordCount] = useState(0);
+  const [navigationQuery, setNavigationQuery] = useState('');
+  const [navigationMode, setNavigationMode] = useState<'Headings'|'Pages'|'Results'>('Headings');
   const editor = useEditor({
     extensions: [StarterKit, Underline, TextStyle, Color, FontFamily, FontSize, TextAlign.configure({ types: ['heading', 'paragraph'] })],
     content: '<h1>Welcome to Verbum 2.0</h1><p>This is the new structured editing engine prototype.</p>',
@@ -88,7 +90,7 @@ export default function App() {
   const group = (title:string, children:ReactNode) => <section className="ribbon-group"><div className="ribbon-tools">{children}</div><small>{title}</small></section>;
   const outline = editor?.getJSON().content?.filter(node => node.type === 'heading').map((node,i) => ({ id:i, level:node.attrs?.level || 1, text:node.content?.map(c=>c.text || '').join('') || 'Untitled heading' })) || [];
   return <div className={mobileRibbon ? 'app ribbon-open' : 'app'}>
-    <header className="titlebar"><span className="brand">verbum.</span><span className="version">v2.0.0-alpha.7</span><input className="document-name" aria-label="Document name" value={name} onChange={e => setName(e.target.value)} />
+    <header className="titlebar"><span className="brand">verbum.</span><span className="version">v2.0.0-alpha.8</span><input className="document-name" aria-label="Document name" value={name} onChange={e => setName(e.target.value)} />
       <div className="quick-actions">{cmd('Save document','save',save)}{cmd('Undo','undo',()=>run(()=>editor?.chain().focus().undo().run()))}{cmd('Redo','redo',()=>run(()=>editor?.chain().focus().redo().run()))}</div>
       <span className="save-state" title={notice}>{notice}</span>{cmd(fullScreen?'Exit fullscreen':'Fullscreen','fullscreen',()=>void toggleFullscreen())}
     </header>
@@ -97,7 +99,7 @@ export default function App() {
     {mobileRibbon && <button className="drawer-backdrop" aria-label="Close ribbon" onClick={()=>setMobileRibbon(false)}/>}
     <div className="ribbon" role="toolbar" aria-label={tab + ' ribbon'}>
       {tab === 'Home' ? <>
-        {group('Editing',<>{cmd('Undo','undo',()=>run(()=>editor?.chain().focus().undo().run()))}{cmd('Redo','redo',()=>run(()=>editor?.chain().focus().redo().run()))}</>)}
+        
         {group('Clipboard',<>{cmd('Paste','paste',()=>void pasteClipboard())}{cmd('Cut','cut',()=>void copyClipboard(true))}{cmd('Copy','copy',()=>void copyClipboard(false))}</>)}
         {group('Font',<><div className="font-controls"><select aria-label="Font family" title="Font family" defaultValue="Arial" onChange={e=>run(()=>editor?.chain().focus().setFontFamily(e.target.value).run())}>{googleFonts.map(font=><option key={font} value={font}>{font}</option>)}</select><select aria-label="Font size" title="Font size" defaultValue="11" onChange={e=>setFontSize(Number(e.target.value))}>{fontSizes.map(size=><option key={size} value={size}>{size}</option>)}</select><button title="Grow font" onClick={()=>stepFontSize(1)}>A+</button><button title="Shrink font" onClick={()=>stepFontSize(-1)}>A−</button></div><div className="font-buttons">{cmd('Bold','bold',()=>run(()=>editor?.chain().focus().toggleBold().run()),editor?.isActive('bold'))}{cmd('Italic','italic',()=>run(()=>editor?.chain().focus().toggleItalic().run()),editor?.isActive('italic'))}{cmd('Underline','underline',()=>run(()=>editor?.chain().focus().toggleUnderline().run()),editor?.isActive('underline'))}<label className="color-picker" title="Font color">A<input type="color" aria-label="Font color" defaultValue="#202020" onChange={e=>run(()=>editor?.chain().focus().setColor(e.target.value).run())}/></label><button title="Clear formatting" onClick={()=>run(()=>editor?.chain().focus().unsetAllMarks().run())}>Tx</button></div></>)}
         {group('Paragraph',<>{cmd('Bullets','bullets',()=>run(()=>editor?.chain().focus().toggleBulletList().run()))}{cmd('Numbering','numbers',()=>run(()=>editor?.chain().focus().toggleOrderedList().run()))}{cmd('Align left','left',()=>run(()=>editor?.chain().focus().setTextAlign('left').run()))}{cmd('Align centre','center',()=>run(()=>editor?.chain().focus().setTextAlign('center').run()))}{cmd('Align right','right',()=>run(()=>editor?.chain().focus().setTextAlign('right').run()))}</>)}
@@ -110,7 +112,7 @@ export default function App() {
       </> : group(tab,<span className="ribbon-note">Features under development</span>)}
     </div>
     <main className="workspace">
-      <aside className={'side-pane navigation-pane'+(navOpen?' pane-open':'')}><h3>Navigation</h3>{outline.length ? outline.map(h=><div className={'outline-item h'+h.level} key={h.id}>{h.text}</div>) : <p className="pane-hint">Headings appear here as you write.</p>}</aside>
+      <aside className={'side-pane navigation-pane'+(navOpen?' pane-open':'')}><h3>Navigation</h3><input className="navigation-search" aria-label="Search document" placeholder="Search document" value={navigationQuery} onChange={e=>setNavigationQuery(e.target.value)}/><div className="navigation-modes">{(['Headings','Pages','Results'] as const).map(mode=><button key={mode} className={navigationMode===mode?'selected':''} onClick={()=>setNavigationMode(mode)}>{mode}</button>)}</div>{navigationMode==='Headings' ? (outline.filter(h=>h.text.toLowerCase().includes(navigationQuery.toLowerCase())).length ? outline.filter(h=>h.text.toLowerCase().includes(navigationQuery.toLowerCase())).map(h=><div className={'outline-item h'+h.level} key={h.id}>{h.text}</div>) : <p className="pane-hint">No matching headings.</p>) : <p className="pane-hint">{navigationMode==='Pages'?'Page thumbnails are planned.':'Document search results are planned.'}</p>}</aside>
       <div className="document-area"><div className="document-stage" style={{zoom:zoom+'%'}}><div className="horizontal-ruler" aria-label="Horizontal page ruler"><div className="ruler-printable"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span></div></div><div className="sheet-row"><div className="vertical-ruler" aria-label="Vertical page ruler"><div className="ruler-vertical-printable">{Array.from({length:9},(_,i)=><span key={i}>{i}</span>)}</div></div><article className="paper"><EditorContent editor={editor}/></article></div></div></div>
       <aside className={'side-pane styles-pane'+(stylesOpen?' pane-open':'')}><h3>Styles</h3><div className="styles-list"><button onClick={()=>run(()=>editor?.chain().focus().setParagraph().run())}>Normal</button><button onClick={()=>run(()=>editor?.chain().focus().toggleHeading({level:1}).run())}>Heading 1</button><button onClick={()=>run(()=>editor?.chain().focus().toggleHeading({level:2}).run())}>Heading 2</button></div></aside>
     </main>
