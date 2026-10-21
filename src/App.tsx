@@ -188,7 +188,7 @@ export default function App() {
     return ()=>window.clearTimeout(handle);
   },[editor,name,wordCount,autoRecover]);
   return <div className={mobileRibbon ? 'app ribbon-open' : 'app'}>
-    <header className="titlebar"><span className="brand">verbum.</span><span className="version">v2.0.0-alpha.16</span><input className="document-name" aria-label="Document name" value={name} onChange={e => setName(e.target.value)} />
+    <header className="titlebar"><span className="brand">verbum.</span><span className="version">v2.0.0-alpha.17</span><input className="document-name" aria-label="Document name" value={name} onChange={e => setName(e.target.value)} />
       <div className="quick-actions">{cmd('Save document','save',()=>save())}{cmd('Undo','undo',()=>run(()=>editor?.chain().focus().undo().run()))}{cmd('Redo','redo',()=>run(()=>editor?.chain().focus().redo().run()))}</div>
       <span className="save-state" title={notice}>{notice}</span>{cmd(fullScreen?'Exit fullscreen':'Fullscreen','fullscreen',()=>void toggleFullscreen())}
     </header>
@@ -211,6 +211,11 @@ export default function App() {
  onBlank={()=>run(()=>editor?.chain().focus().insertContent({type:'pageBreak'}).run())}
  onPageBreak={()=>run(()=>editor?.chain().focus().insertContent({type:'pageBreak'}).run())}
  onTable={(rows,cols)=>{const content=Array.from({length:rows},()=>({type:'tableRow',content:Array.from({length:cols},()=>({type:'tableCell',content:[{type:'paragraph'}]}))}));run(()=>editor?.chain().focus().insertContent({type:'table',content}).run())}}
+ onQuickTable={kind=>{if(!editor)return;
+  const values=kind==='calendar'?[['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'],...Array.from({length:5},()=>Array(7).fill(''))]:kind==='comparison'?[['Feature','Option A','Option B'],['Price','',''],['Benefits','',''],['Notes','','']]:[['Time','Activity','Owner'],['09:00','',''],['10:00','',''],['11:00','','']];
+  const content=values.map(row=>({type:'tableRow',content:row.map(value=>({type:'tableCell',content:[{type:'paragraph',content:value?[{type:'text',text:value}]:undefined}]}))}));
+  editor.chain().focus().insertContent({type:'table',content}).run();
+ }}
  onPicture={()=>picturePicker.current?.click()}
  onLink={()=>{if(!editor)return;const href=window.prompt('Enter URL (https://...)',String(editor.getAttributes('link').href||'https://'));if(href===null)return;try{const u=new URL(href);if(!['https:','http:','mailto:'].includes(u.protocol))throw Error('Invalid scheme');if(editor.state.selection.empty){editor.chain().focus().insertContent({type:'text',text:href,marks:[{type:'link',attrs:{href}}]}).run()}else editor.chain().focus().setMark('link',{href}).run()}catch{setNotice('Enter a valid http(s) or mailto link')}}}
  onBookmark={()=>{const label=window.prompt('Bookmark name');if(label?.trim())run(()=>editor?.chain().focus().insertContent('['+label.trim()+']').run())}}
