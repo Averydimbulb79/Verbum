@@ -198,3 +198,6 @@
 .verbum-table td p{margin:0;min-height:1.1em}
 .document-stage .editor-content a{color:#265cc7;text-decoration:underline}
 @media print{.verbum-watermark{print-color-adjust:exact}.verbum-page-break{border:0;height:0}.verbum-page-break::after{display:none}}
+
+/* Contextual table tools */
+.tabs button.contextual-tab{color:#365cc3;font-weight:700;border-top:2px solid #5279e5;background:#eef3ff}.tabs button.contextual-tab.active{border-bottom:3px solid #365cc3}.ribbon:has(.contextual-table-group) button{font-size:12px}
