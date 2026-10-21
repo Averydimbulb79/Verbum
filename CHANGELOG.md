@@ -1,3 +1,12 @@
+## 2.0.0-alpha.6 — Home font controls and compact tabs
+- Created rollback checkpoint `backup/pre-home-ribbon-typography`.
+- Reduced File/Home/Insert tab label size to 12px with tighter spacing.
+- Added font-family selection (including Google Fonts), point sizes, text colour and clear formatting in Home > Font.
+- Added separate quote and line-break icons in Insert.
+- Preserved Alpha 4 page, ruler and panel layout.
+- Further Word-style Home ribbon controls remain to be implemented; this is not exact Microsoft Word parity.
+- Build/deployment and browser interactions have not yet been verified.
+
 ## 2.0.0-alpha.5 — Insert ribbon (Alpha 4 baseline)
 - Created `backup/alpha4-confirmed-working` before development.
 - Added compact Insert ribbon groups: Pages (divider, line break), Text (quote, local date/time), Symbols (© ® — • °).
