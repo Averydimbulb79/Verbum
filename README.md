@@ -45,3 +45,11 @@ Design, Layout, References, Review and View now follow the reference screenshots
 
 ### Alpha 13 — View ribbon routing fix
 Removed the obsolete View tab branch in `src/App.tsx`, which previously intercepted View before the new Word-style ribbon could render. View now uses `src/WordRibbons.tsx`, exposing Views, Immersive, Page Movement, Show, Zoom, Dark Mode, Window and Templates groups. Advanced functions remain disabled until implemented. Checkpoint: `backup/pre-view-ribbon-routing-fix`.
+
+### Alpha 14 — File workspace and templates
+- Restyled the File Backstage workspace with document preview cards, eight editable starter templates, category filtering and template search.
+- File navigation supports Home, New, Open, Info, Recover, Save, Save As, Print, Export, Close and Options.
+- Recent documents are stored locally in this browser on save; recovery snapshots are optionally stored locally while editing. These are not cloud backups.
+- Export supports editable `.verbum`, HTML and plain text. PDF is available through the browser Print → Save as PDF workflow; DOCX/RTF remain future work.
+- Native `.verbum` remains the preservation format. Template creation asks before replacing the current document.
+- Rollback checkpoint: `backup/pre-file-workspace-completion`. Browser build verification is pending.
