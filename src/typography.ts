@@ -1,0 +1,2 @@
+import { Extension } from '@tiptap/core';
+export const FontSize = Extension.create({ name: 'verbumFontSize', addGlobalAttributes() { return [{ types: ['textStyle'], attributes: { fontSize: { default: null, parseHTML: (element: HTMLElement) => element.style.fontSize || null, renderHTML: (attributes: {fontSize?: string}) => attributes.fontSize ? {style: 'font-size: ' + attributes.fontSize} : {} } } }]; } });
