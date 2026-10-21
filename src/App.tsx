@@ -25,6 +25,8 @@ export default function App() {
   const [stylesOpen, setStylesOpen] = useState(false);
   const [fullScreen, setFullScreen] = useState(false);
   const [wordCount, setWordCount] = useState(0);
+  const [fileOpen, setFileOpen] = useState(false);
+  const [fileSection, setFileSection] = useState('Home');
   const [navigationQuery, setNavigationQuery] = useState('');
   const [navigationMode, setNavigationMode] = useState<'Headings'|'Pages'|'Results'>('Headings');
   const editor = useEditor({
@@ -89,12 +91,30 @@ export default function App() {
   const cmd = (label:string, icon:string, action:()=>void, pressed?:boolean) => <button key={label} title={label} aria-label={label} aria-pressed={pressed} onClick={action}><Glyph name={icon}/><span className="command-label">{label}</span></button>;
   const group = (title:string, children:ReactNode) => <section className="ribbon-group"><div className="ribbon-tools">{children}</div><small>{title}</small></section>;
   const outline = editor?.getJSON().content?.filter(node => node.type === 'heading').map((node,i) => ({ id:i, level:node.attrs?.level || 1, text:node.content?.map(c=>c.text || '').join('') || 'Untitled heading' })) || [];
+  const fileItems = ['Home','New','Open','Info','Recover','Save','Save As','Print','Export','Close','Options'];
+  const startTemplate = (kind: string) => {
+    if (!editor || !window.confirm('Create a new document? Unsaved changes will be lost.')) return;
+    const contents: Record<string,string> = {
+      'Blank document':'<p></p>',
+      'Letter':'<p>Dear Recipient,</p><p></p><p>Sincerely,</p><p>Your Name</p>',
+      'Résumé':'<h1>Your Name</h1><p>Contact information</p><h2>Experience</h2><p></p><h2>Education</h2><p></p><h2>Skills</h2><p></p>',
+      'Meeting notes':'<h1>Meeting Notes</h1><p>Date:</p><h2>Attendees</h2><p></p><h2>Agenda</h2><p></p><h2>Action Items</h2><p></p>'
+    };
+    editor.commands.setContent(contents[kind] || '<p></p>');setName(kind==='Blank document'?'Untitled document':kind);setWordCount(0);setFileOpen(false);
+  };
+  const fileAction = (item:string) => {
+    if(item==='Save'||item==='Save As'){save();return;}
+    if(item==='Open'){picker.current?.click();return;}
+    if(item==='Print'){setFileSection('Print');return;}
+    if(item==='Close'){setFileOpen(false);return;}
+    setFileSection(item);
+  };
   return <div className={mobileRibbon ? 'app ribbon-open' : 'app'}>
-    <header className="titlebar"><span className="brand">verbum.</span><span className="version">v2.0.0-alpha.8</span><input className="document-name" aria-label="Document name" value={name} onChange={e => setName(e.target.value)} />
+    <header className="titlebar"><span className="brand">verbum.</span><span className="version">v2.0.0-alpha.9</span><input className="document-name" aria-label="Document name" value={name} onChange={e => setName(e.target.value)} />
       <div className="quick-actions">{cmd('Save document','save',save)}{cmd('Undo','undo',()=>run(()=>editor?.chain().focus().undo().run()))}{cmd('Redo','redo',()=>run(()=>editor?.chain().focus().redo().run()))}</div>
       <span className="save-state" title={notice}>{notice}</span>{cmd(fullScreen?'Exit fullscreen':'Fullscreen','fullscreen',()=>void toggleFullscreen())}
     </header>
-    <nav className="tabs" aria-label="Ribbon tabs">{tabs.map(t => <button key={t} className={tab === t ? 'active' : ''} onClick={() => {setTab(t);setMobileRibbon(false);}}>{t}</button>)}</nav>
+    <nav className="tabs" aria-label="Ribbon tabs">{tabs.map(t => <button key={t} className={tab === t ? 'active' : ''} onClick={() => {if(t==='File'){setFileOpen(true);setFileSection('Home');}else{setTab(t);setFileOpen(false);}setMobileRibbon(false);}}>{t}</button>)}</nav>
     <div className="mobile-controls"><button onClick={()=>setMobileRibbon(v=>!v)} aria-expanded={mobileRibbon}>☰ Tabs</button><button onClick={()=>{setNavOpen(v=>!v);setStylesOpen(false)}}>☰ Outline</button><button onClick={()=>{setStylesOpen(v=>!v);setNavOpen(false)}}>Styles</button></div>
     {mobileRibbon && <button className="drawer-backdrop" aria-label="Close ribbon" onClick={()=>setMobileRibbon(false)}/>}
     <div className="ribbon" role="toolbar" aria-label={tab + ' ribbon'}>
@@ -117,6 +137,16 @@ export default function App() {
       <aside className={'side-pane styles-pane'+(stylesOpen?' pane-open':'')}><h3>Styles</h3><div className="styles-list"><button onClick={()=>run(()=>editor?.chain().focus().setParagraph().run())}>Normal</button><button onClick={()=>run(()=>editor?.chain().focus().toggleHeading({level:1}).run())}>Heading 1</button><button onClick={()=>run(()=>editor?.chain().focus().toggleHeading({level:2}).run())}>Heading 2</button></div></aside>
     </main>
     <footer className="statusbar"><span>{wordCount} words · {editor?.getText().length || 0} characters</span><span>A4 · Portrait · Verbum 2.0</span><span className="status-zoom"><button onClick={()=>setZoom(z=>Math.max(50,z-10))}>−</button><button onClick={()=>setZoom(100)}>Fit</button><output>{zoom}%</output><button onClick={()=>setZoom(z=>Math.min(200,z+10))}>+</button></span></footer>
+    {fileOpen && <div className="backstage" role="dialog" aria-modal="true" aria-label="File workspace">
+      <aside className="backstage-menu"><button className="backstage-back" onClick={()=>setFileOpen(false)} aria-label="Return to document">‹ <span>Back to document</span></button>{fileItems.map(item=><button key={item} className={fileSection===item?'selected':''} onClick={()=>fileAction(item)}><span className="backstage-menu-icon">{({Home:'⌂',New:'＋',Open:'▱',Info:'ⓘ',Recover:'↶',Save:'▣','Save As':'▤',Print:'▧',Export:'⇥',Close:'×',Options:'⚙'} as Record<string,string>)[item]}</span>{item}</button>)}<div className="backstage-menu-footer">verbum. <small>v2.0.0-alpha.9</small></div></aside>
+      <section className="backstage-content"><h1>{fileSection==='Home'?'Welcome to Verbum':fileSection}</h1>
+      {(fileSection==='Home'||fileSection==='New') && <><h2>Start a document</h2><div className="template-gallery">{['Blank document','Letter','Résumé','Meeting notes'].map((kind,i)=><button className="template-tile" key={kind} onClick={()=>startTemplate(kind)}><div className="template-preview"><span className="template-line heading"/>{i>0&&<><span className="template-line"/><span className="template-line short"/><span className="template-line"/><span className="template-line short"/></>}</div><span>{kind}</span></button>)}</div>{fileSection==='Home'&&<><h2>Recent</h2><p className="backstage-muted">Recent documents are not yet stored. Open a local .verbum document to continue editing.</p><button className="backstage-primary" onClick={()=>picker.current?.click()}>Browse files</button></>}</>}
+      {fileSection==='Open'&&<><p>Open a Verbum document from your device.</p><button className="backstage-primary" onClick={()=>picker.current?.click()}>Browse files</button></>}
+      {fileSection==='Info'&&<div className="backstage-info"><p><strong>Name:</strong> {name}</p><p><strong>Words:</strong> {wordCount}</p><p><strong>Format:</strong> Verbum native document (.verbum)</p><p><strong>Document protection:</strong> Not yet available</p></div>}
+      {fileSection==='Print'&&<><p>Print the current document using your browser's print dialog.</p><button className="backstage-primary" onClick={()=>window.print()}>Print document</button></>}
+      {fileSection==='Export'&&<><p>Download the editable native Verbum document.</p><button className="backstage-primary" onClick={save}>Export .verbum</button><p className="backstage-muted">PDF, DOCX and other export formats are planned.</p></>}
+      {['Recover','Options'].includes(fileSection)&&<p className="backstage-muted">This section is planned but not yet available.</p>}
+      </section></div>}
     <input ref={picker} type="file" accept=".verbum,application/json" hidden onChange={e => { void open(e.target.files?.[0]); e.target.value = ''; }} />
   </div>;
 }
