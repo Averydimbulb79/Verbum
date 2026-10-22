@@ -223,3 +223,16 @@
 .table-dimensions button{background:#365fce;color:white;border-radius:4px;padding:6px 10px}
 .quick-table-options{background:#f5f7fc;border-left:3px solid #5b7fd5}
 @media(max-width:760px){.table-picker-menu{left:-65px;width:min(306px,calc(100vw - 30px))}}
+
+/* App-wide scrollbars: understated blue-grey, including Chromium and Firefox. */
+.app,.app *{scrollbar-width:thin;scrollbar-color:#9aaecb #edf1f7}
+.app ::-webkit-scrollbar{width:9px;height:9px}
+.app ::-webkit-scrollbar-track{background:#edf1f7;border-radius:10px}
+.app ::-webkit-scrollbar-thumb{background:#9aaecb;border:2px solid #edf1f7;border-radius:10px}
+.app ::-webkit-scrollbar-thumb:hover{background:#5f80b5}
+.app ::-webkit-scrollbar-corner{background:#edf1f7}
+/* Portalled popup lives outside the horizontally scrollable ribbon. */
+.table-picker-menu{z-index:10000;max-height:calc(100dvh - 30px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#9aaecb #f4f6fa}
+.table-picker-menu::-webkit-scrollbar{width:8px}
+.table-picker-menu::-webkit-scrollbar-thumb{background:#9aaecb;border-radius:8px}
+.table-picker-menu::-webkit-scrollbar-track{background:#f4f6fa}
