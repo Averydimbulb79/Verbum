@@ -277,3 +277,28 @@
 .editor-content .verbum-table:focus-within{outline:2px solid #447bd5;outline-offset:3px}
 .editor-content .verbum-table:focus-within td:hover{box-shadow:inset 0 0 0 1px #5b89d8}
 .editor-content .verbum-table td:focus-within{background-color:#e9f1ff!important;box-shadow:inset 0 0 0 2px #4c7dd5}
+
+/* Alpha 20 — compact Word-inspired Home ribbon. */
+.ribbon-group:has(.font-controls){min-width:420px}
+.ribbon-group:has(.font-controls) .ribbon-tools{align-items:stretch;gap:6px}
+.font-controls{height:35px;gap:5px}
+.font-controls select:first-child{width:220px;font-size:13px;height:32px}
+.font-controls select:nth-child(2){width:65px;font-size:13px;height:32px}
+.font-buttons{min-height:35px;gap:3px}
+.font-buttons button{font-size:14px;min-width:28px;min-height:29px}
+.ribbon-group:has(.paragraph-grid){min-width:295px}
+.ribbon-group:has(.paragraph-grid) .ribbon-tools{display:flex;align-items:center;gap:12px}
+.paragraph-grid{grid-template-columns:repeat(3,34px);grid-template-rows:repeat(2,32px);gap:3px}
+.paragraph-extras{display:grid;grid-template-columns:repeat(2,32px);gap:4px}
+.paragraph-extras button{min-height:31px;font-size:19px}
+.ribbon-group:has(.clipboard-layout){min-width:125px}
+.clipboard-layout{align-items:center}
+.paste-major button{height:51px;width:48px}
+.paste-major svg{width:29px;height:29px}
+.ribbon-group:has(.style-gallery){min-width:305px}
+.style-gallery{gap:5px}
+.ribbon-group:has(.editing-actions){min-width:120px}
+.ribbon-group:has(.editing-actions) .ribbon-tools{align-items:stretch}
+.editing-actions{display:flex;flex-direction:column;gap:2px}
+.editing-actions button{justify-content:flex-start;font-size:12px}
+@media(max-width:760px){.ribbon-group:has(.font-controls){min-width:360px}.font-controls select:first-child{width:160px}.ribbon-group:has(.paragraph-grid){min-width:260px}}
