@@ -24,7 +24,7 @@ export default function App() {
   const [tableActive,setTableActive]=useState(false);
   const [tableFormat,setTableFormat]=useState({width:'100%',styleName:'grid',headerRow:false,bandedRows:false});
   const [name, setName] = useState('Untitled document');
-  const [notice, setNotice] = useState('Phase 0 prototype — not Word-compatible yet');
+  const [notice, setNotice] = useState('Verbum Alpha 20 — document editing');
   const picker = useRef<HTMLInputElement>(null);
   const [zoom, setZoom] = useState(100);
   const [pageColor, setPageColor] = useState('#ffffff');
@@ -215,7 +215,7 @@ export default function App() {
     return ()=>window.clearTimeout(handle);
   },[editor,name,wordCount,autoRecover]);
   return <div className={mobileRibbon ? 'app ribbon-open' : 'app'}>
-    <header className="titlebar"><span className="brand">verbum.</span><span className="version">v2.0.0-alpha.17</span><input className="document-name" aria-label="Document name" value={name} onChange={e => setName(e.target.value)} />
+    <header className="titlebar"><span className="brand">verbum.</span><span className="version">v2.0.0-alpha.20</span><input className="document-name" aria-label="Document name" value={name} onChange={e => setName(e.target.value)} />
       <div className="quick-actions">{cmd('Save document','save',()=>save())}{cmd('Undo','undo',()=>run(()=>editor?.chain().focus().undo().run()))}{cmd('Redo','redo',()=>run(()=>editor?.chain().focus().redo().run()))}</div>
       <span className="save-state" title={notice}>{notice}</span>{cmd(fullScreen?'Exit fullscreen':'Fullscreen','fullscreen',()=>void toggleFullscreen())}
     </header>
