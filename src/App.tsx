@@ -22,6 +22,7 @@ const tabs = ['File', 'Home', 'Insert', 'Design', 'Layout', 'References', 'Revie
 export default function App() {
   const [tab, setTab] = useState('Home');
   const [tableActive,setTableActive]=useState(false);
+  const [tableFormat,setTableFormat]=useState({width:'100%',styleName:'grid',headerRow:false,bandedRows:false});
   const [name, setName] = useState('Untitled document');
   const [notice, setNotice] = useState('Phase 0 prototype — not Word-compatible yet');
   const picker = useRef<HTMLInputElement>(null);
