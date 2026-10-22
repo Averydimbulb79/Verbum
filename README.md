@@ -80,3 +80,6 @@ The Insert > Table control now opens a 10-column by 8-row hover-preview grid. Cl
 - Active table and cell now receive blue focus highlights. Structural operations continue using the existing table node implementation.
 - Current limitations: width adjustment uses a ribbon selector, not drag handles; cell merging/splitting and row-height drag resizing are not yet implemented. Table formatting is serialized in native document JSON.
 - Rollback: `backup/pre-table-design-layout-upgrade`. Build/browser verification pending.
+
+### Alpha 20 — Word-inspired Home ribbon layout
+Rebalanced the Home ribbon to match the supplied Microsoft Word reference: larger Paste button and compact clipboard group; two-row Font section with wider Google Font selector, size picker and formatting controls; expanded Paragraph alignment/list group with indent and paragraph-mark affordances; refined Styles and Editing group proportions. Subscript and superscript remain disabled pending their extensions; highlight and paragraph-mark controls currently display explanatory notices rather than silently modifying content. Existing functional formatting commands are retained. Rollback: `backup/pre-home-ribbon-word-layout`. Build/browser verification pending.
