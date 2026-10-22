@@ -67,3 +67,8 @@ When the editor selection enters a table cell, a contextual **Table** tab appear
 
 ### Alpha 17 — Word-style Insert Table menu
 The Insert > Table control now opens a 10-column by 8-row hover-preview grid. Clicking a cell inserts the selected dimensions. The Insert Table… submenu accepts precise dimensions (up to 30 columns and 100 rows). Quick Tables includes editable Calendar, Comparison and Schedule presets. Draw Table, Convert Text to Table and Excel Spreadsheet are visibly disabled until real implementations exist. The contextual Table ribbon from Alpha 16 remains. Rollback checkpoint: `backup/pre-table-insertion-grid`. Build and browser verification pending.
+
+### Alpha 18 — Table menu overlay and scrollbar polish
+- Render the Insert Table menu in a fixed-position portal, outside the ribbon's scroll clipping, with viewport-aware horizontal positioning and independent vertical scrolling.
+- Style document, navigation, ribbon, and Backstage scrollbars in a consistent muted blue-grey (Chromium and Firefox).
+- Backup checkpoint: `backup/pre-table-popover-scrollbar-fix`. Build and browser verification pending.
