@@ -1,3 +1,4 @@
+import TableRibbons from './TableRibbons';
 import InsertRibbon from './InsertRibbon';
 import {ImageNode,PageBreakNode,LinkMark,TableNode,TableRowNode,TableCellNode} from './insertExtensions';
 import FileWorkspace, { type FileSection, type TemplateId, type RecentDocument } from './FileWorkspace';
@@ -56,12 +57,12 @@ export default function App() {
     extensions: [StarterKit, ImageNode, PageBreakNode, LinkMark, TableNode, TableRowNode, TableCellNode, Underline, TextStyle, Color, FontFamily, FontSize, TextAlign.configure({ types: ['heading', 'paragraph'] })],
     content: '<h1>Welcome to Verbum 2.0</h1><p>This is the new structured editing engine prototype.</p>',
     onUpdate: ({ editor }) => setWordCount(editor.getText().trim().split(/\s+/).filter(Boolean).length),
-    onSelectionUpdate: ({editor})=>{const active=editor.isActive('table');setTableActive(active);if(active)setTab(current=>current==='Table'?current:'Table')},
+    onSelectionUpdate: ({editor})=>{const active=editor.isActive('table');setTableActive(active);if(active)setTab(current=>current.startsWith('Table')?current:'Table Design')},
     onTransaction: ({editor})=>setTableActive(editor.isActive('table')),
     editorProps: { attributes: { 'aria-label': 'Document editor', class: 'editor-content' } },
   });
   const run = (fn: () => void) => { fn(); editor?.commands.focus(); };
-  useEffect(()=>{if(!tableActive&&tab==='Table')setTab('Home')},[tableActive,tab]);
+  useEffect(()=>{if(!tableActive&&tab.startsWith('Table'))setTab('Home')},[tableActive,tab]);
   const tableAction=(action:'rowAbove'|'rowBelow'|'colBefore'|'colAfter'|'deleteRow'|'deleteColumn'|'deleteTable')=>{
     if(!editor)return;
     const {$from}=editor.state.selection;
@@ -82,6 +83,31 @@ export default function App() {
     editor.chain().focus().command(({tr,dispatch})=>{if(dispatch)dispatch(tr.replaceWith(tablePos,tablePos+table.nodeSize,editor.schema.nodeFromJSON(replacement)));return true}).run();
   };
 
+  const tableFormatAction=(action:string,value?:string|number|boolean)=>{
+    if(!editor)return;
+    if(['rowAbove','rowBelow','colBefore','colAfter','deleteRow','deleteColumn','deleteTable'].includes(action)){tableAction(action as Parameters<typeof tableAction>[0]);return}
+    const {$from}=editor.state.selection;
+    let tableDepth=-1,cellDepth=-1;
+    for(let d=$from.depth;d>=0;d--){if($from.node(d).type.name==='table'&&tableDepth<0)tableDepth=d;if($from.node(d).type.name==='tableCell'&&cellDepth<0)cellDepth=d}
+    if(tableDepth<0)return;
+    const tablePos=$from.before(tableDepth),table=$from.node(tableDepth);
+    if(action==='selectTable'){editor.chain().focus().setTextSelection({from:tablePos+1,to:tablePos+table.nodeSize-1}).run();return}
+    if(action==='properties'){setNotice('Table: '+table.childCount+' rows · '+table.firstChild?.childCount+' columns · width '+(table.attrs.width||'100%'));return}
+    if(['style','width','headerRow','bandedRows','borderColor','borderWidth'].includes(action)){
+      const key=action==='style'?'styleName':action;
+      editor.chain().focus().command(({tr,dispatch})=>{if(dispatch)dispatch(tr.setNodeMarkup(tablePos,undefined,{...table.attrs,[key]:value}));return true}).run();
+      setTableFormat(current=>({...current,[key]:value}));
+      return;
+    }
+    if(cellDepth<0)return;
+    const cellPos=$from.before(cellDepth),cell=$from.node(cellDepth);
+    if(action==='shade'||action==='align'){
+      const attrs={...cell.attrs};
+      if(action==='shade')attrs.background=value;
+      else {const [h,v]=String(value).split(':');attrs.align=h;attrs.verticalAlign=v}
+      editor.chain().focus().command(({tr,dispatch})=>{if(dispatch)dispatch(tr.setNodeMarkup(cellPos,undefined,attrs));return true}).run();
+    }
+  };
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') { event.preventDefault(); save(); }
@@ -192,14 +218,11 @@ export default function App() {
       <div className="quick-actions">{cmd('Save document','save',()=>save())}{cmd('Undo','undo',()=>run(()=>editor?.chain().focus().undo().run()))}{cmd('Redo','redo',()=>run(()=>editor?.chain().focus().redo().run()))}</div>
       <span className="save-state" title={notice}>{notice}</span>{cmd(fullScreen?'Exit fullscreen':'Fullscreen','fullscreen',()=>void toggleFullscreen())}
     </header>
-    <nav className="tabs" aria-label="Ribbon tabs">{[...tabs,...(tableActive?['Table']:[])].map(t => <button key={t} className={(tab === t ? 'active ' : '')+(t==='Table'?'contextual-tab':'')} onClick={() => {if(t==='File'){setFileOpen(true);setFileSection('Home');}else{setTab(t);setFileOpen(false);}setMobileRibbon(false);}}>{t}</button>)}</nav>
+    <nav className="tabs" aria-label="Ribbon tabs">{[...tabs,...(tableActive?['Table Design','Table Layout']:[])].map(t => <button key={t} className={(tab === t ? 'active ' : '')+(t.startsWith('Table')?'contextual-tab':'')} onClick={() => {if(t==='File'){setFileOpen(true);setFileSection('Home');}else{setTab(t);setFileOpen(false);}setMobileRibbon(false);}}>{t}</button>)}</nav>
     <div className="mobile-controls"><button onClick={()=>setMobileRibbon(v=>!v)} aria-expanded={mobileRibbon}>☰ Tabs</button><button onClick={()=>{setNavOpen(v=>!v);setStylesOpen(false)}}>☰ Outline</button><button onClick={()=>{setStylesOpen(v=>!v);setNavOpen(false)}}>Styles</button></div>
     {mobileRibbon && <button className="drawer-backdrop" aria-label="Close ribbon" onClick={()=>setMobileRibbon(false)}/>}
     <div className="ribbon" role="toolbar" aria-label={tab + ' ribbon'}>
-      {tab === 'Table' && tableActive ? <>
-        {group('Rows & Columns',<><button onClick={()=>tableAction('rowAbove')}>↑ Insert Row</button><button onClick={()=>tableAction('rowBelow')}>↓ Insert Row</button><button onClick={()=>tableAction('colBefore')}>← Insert Column</button><button onClick={()=>tableAction('colAfter')}>→ Insert Column</button></>)}
-        {group('Delete',<><button onClick={()=>tableAction('deleteRow')}>Delete Row</button><button onClick={()=>tableAction('deleteColumn')}>Delete Column</button><button onClick={()=>tableAction('deleteTable')}>Delete Table</button></>)}
-      </> : tab === 'Home' ? <>
+      {tab.startsWith('Table') && tableActive ? <TableRibbons mode={tab==='Table Layout'?'Table Layout':'Table Design'} onMode={setTab} action={tableFormatAction} width={tableFormat.width} styleName={tableFormat.styleName} headerRow={tableFormat.headerRow} bandedRows={tableFormat.bandedRows}/>  : tab === 'Home' ? <>
         
         {group('Clipboard',<><div className="clipboard-layout"><div className="paste-major">{cmd('Paste','paste',()=>void pasteClipboard())}<span>Paste</span></div><div className="clipboard-minor">{cmd('Cut','cut',()=>void copyClipboard(true))}{cmd('Copy','copy',()=>void copyClipboard(false))}<button title="Format Painter is planned" disabled><Glyph name="copy"/><span>Format</span></button></div></div></>)}
         {group('Font',<><div className="font-controls"><select aria-label="Font family" defaultValue="Arial" onChange={e=>run(()=>editor?.chain().focus().setFontFamily(e.target.value).run())}>{googleFonts.map(font=><option key={font}>{font}</option>)}</select><select aria-label="Font size" defaultValue="11" onChange={e=>setFontSize(Number(e.target.value))}>{fontSizes.map(size=><option key={size}>{size}</option>)}</select><button title="Increase font size" onClick={()=>stepFontSize(1)}>A+</button><button title="Decrease font size" onClick={()=>stepFontSize(-1)}>A−</button></div><div className="font-buttons">{cmd('Bold','bold',()=>run(()=>editor?.chain().focus().toggleBold().run()),editor?.isActive('bold'))}{cmd('Italic','italic',()=>run(()=>editor?.chain().focus().toggleItalic().run()),editor?.isActive('italic'))}{cmd('Underline','underline',()=>run(()=>editor?.chain().focus().toggleUnderline().run()),editor?.isActive('underline'))}<button title="Strike through" onClick={()=>run(()=>editor?.chain().focus().toggleStrike().run())}>S̶</button><label className="color-picker" title="Font colour">A<input type="color" aria-label="Font colour" defaultValue="#202020" onChange={e=>run(()=>editor?.chain().focus().setColor(e.target.value).run())}/></label><button title="Clear formatting" onClick={()=>run(()=>editor?.chain().focus().unsetAllMarks().run())}>Tx</button></div></>)}
