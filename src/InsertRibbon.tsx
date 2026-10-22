@@ -1,3 +1,4 @@
+import {createPortal} from 'react-dom';
 import {useEffect,useRef,useState,type ReactNode} from 'react';
 type Props={
  onCover:()=>void;onBlank:()=>void;onPageBreak:()=>void;onTable:(rows:number,cols:number)=>void;
@@ -14,11 +15,14 @@ function TablePicker({onInsert,onQuickTable}:{onInsert:(rows:number,cols:number)
  const [dialog,setDialog]=useState(false),[rows,setRows]=useState(3),[cols,setCols]=useState(3);
  const [quick,setQuick]=useState(false);
  const ref=useRef<HTMLDivElement>(null);
- useEffect(()=>{if(!open)return;const close=(e:PointerEvent)=>{if(ref.current&&!ref.current.contains(e.target as globalThis.Node))setOpen(false)};const escape=(e:KeyboardEvent)=>{if(e.key==='Escape'){setOpen(false);setDialog(false)}};document.addEventListener('pointerdown',close);document.addEventListener('keydown',escape);return()=>{document.removeEventListener('pointerdown',close);document.removeEventListener('keydown',escape)}},[open]);
+ const menuRef=useRef<HTMLDivElement>(null);
+ const [position,setPosition]=useState({top:0,left:0});
+ useEffect(()=>{if(!open)return;const update=()=>{const rect=ref.current?.getBoundingClientRect();if(rect)setPosition({top:Math.min(rect.bottom+5,window.innerHeight-24),left:Math.max(8,Math.min(rect.left,window.innerWidth-322))})};update();window.addEventListener('resize',update);window.addEventListener('scroll',update,true);return()=>{window.removeEventListener('resize',update);window.removeEventListener('scroll',update,true)}},[open]);
+ useEffect(()=>{if(!open)return;const close=(e:PointerEvent)=>{if(ref.current&&!ref.current.contains(e.target as globalThis.Node)&&!menuRef.current?.contains(e.target as globalThis.Node))setOpen(false)};const escape=(e:KeyboardEvent)=>{if(e.key==='Escape'){setOpen(false);setDialog(false)}};document.addEventListener('pointerdown',close);document.addEventListener('keydown',escape);return()=>{document.removeEventListener('pointerdown',close);document.removeEventListener('keydown',escape)}},[open]);
  const insert=(r:number,c:number)=>{onInsert(r,c);setOpen(false);setDialog(false);setHover([0,0])};
  return <div className="table-picker" ref={ref}>
   <button className={'table-picker-trigger'+(open?' selected':'')} aria-expanded={open} aria-haspopup="menu" onClick={()=>setOpen(v=>!v)}><span className="insert-symbol">▦</span><span>Table⌄</span></button>
-  {open&&<div className="table-picker-menu" role="menu">
+  {open&&createPortal(<div className="table-picker-menu" ref={menuRef} role="menu" style={{position:"fixed",top:position.top,left:position.left}}>
    <strong>Insert Table</strong><div className="table-picker-caption">{hover[0]&&hover[1]?hover[0]+' × '+hover[1]+' Table':'Select the number of columns and rows'}</div>
    <div className="table-picker-grid" onMouseLeave={()=>setHover([0,0])}>{Array.from({length:80},(_,i)=>{const c=i%10+1,r=Math.floor(i/10)+1;return <button key={i} type="button" aria-label={c+' columns by '+r+' rows'} className={c<=hover[0]&&r<=hover[1]?'highlighted':''} onMouseEnter={()=>setHover([c,r])} onFocus={()=>setHover([c,r])} onClick={()=>insert(r,c)}/>})}</div>
    <div className="table-picker-actions"><button onClick={()=>setDialog(v=>!v)}>▦ Insert Table…</button>
@@ -29,7 +33,7 @@ function TablePicker({onInsert,onQuickTable}:{onInsert:(rows:number,cols:number)
    <button onClick={()=>setQuick(v=>!v)} aria-expanded={quick}>▦ Quick Tables ▸</button>
    {quick&&<div className="quick-table-options">{(['calendar','comparison','schedule'] as const).map(kind=><button key={kind} onClick={()=>{onQuickTable(kind);setOpen(false)}}>{kind[0].toUpperCase()+kind.slice(1)}</button>)}</div>}
    </div>
-  </div>}
+  </div>,document.body)}
  </div>;
 }
 export default function InsertRibbon(p:Props){return <>
