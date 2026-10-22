@@ -72,3 +72,11 @@ The Insert > Table control now opens a 10-column by 8-row hover-preview grid. Cl
 - Render the Insert Table menu in a fixed-position portal, outside the ribbon's scroll clipping, with viewport-aware horizontal positioning and independent vertical scrolling.
 - Style document, navigation, ribbon, and Backstage scrollbars in a consistent muted blue-grey (Chromium and Firefox).
 - Backup checkpoint: `backup/pre-table-popover-scrollbar-fix`. Build and browser verification pending.
+
+### Alpha 19 — Contextual Table Design and Table Layout
+- Split contextual table tools into Word-style **Table Design** and **Table Layout** tabs, automatically displayed when the caret enters a table.
+- Table Design: selectable table style previews, header row/banded rows options, per-cell shading, border colour and line width.
+- Table Layout: insert/delete rows and columns, select table, inspect properties, adjustable table width (40–100%), AutoFit page, and 9-point cell alignment.
+- Active table and cell now receive blue focus highlights. Structural operations continue using the existing table node implementation.
+- Current limitations: width adjustment uses a ribbon selector, not drag handles; cell merging/splitting and row-height drag resizing are not yet implemented. Table formatting is serialized in native document JSON.
+- Rollback: `backup/pre-table-design-layout-upgrade`. Build/browser verification pending.
