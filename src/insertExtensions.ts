@@ -18,12 +18,14 @@ export const LinkMark=Mark.create({
 });
 export const TableNode=Node.create({
  name:'table',group:'block',content:'tableRow+',isolating:true,
- parseHTML(){return [{tag:'table'}]},renderHTML(){return ['table',{class:'verbum-table'},['tbody',0]]},
+ addAttributes(){return {width:{default:'100%'},styleName:{default:'grid'},borderColor:{default:'#9eacbe'},borderWidth:{default:1},headerRow:{default:false},bandedRows:{default:false}}},
+ parseHTML(){return [{tag:'table'}]},renderHTML({HTMLAttributes}){return ['table',{class:'verbum-table',...HTMLAttributes,'data-style':HTMLAttributes.styleName,style:`width:${HTMLAttributes.width};--table-border:${HTMLAttributes.borderColor};--table-border-width:${HTMLAttributes.borderWidth}px`},['tbody',0]]},
 });
 export const TableRowNode=Node.create({
  name:'tableRow',content:'tableCell+',parseHTML(){return [{tag:'tr'}]},renderHTML(){return ['tr',0]},
 });
 export const TableCellNode=Node.create({
  name:'tableCell',content:'paragraph+',isolating:true,
- parseHTML(){return [{tag:'td'},{tag:'th'}]},renderHTML(){return ['td',0]},
+ addAttributes(){return {background:{default:null},align:{default:'left'},verticalAlign:{default:'top'}}},
+ parseHTML(){return [{tag:'td'},{tag:'th'}]},renderHTML({HTMLAttributes}){return ['td',{style:`background:${HTMLAttributes.background||'transparent'};text-align:${HTMLAttributes.align};vertical-align:${HTMLAttributes.verticalAlign}`},0]},
 });
